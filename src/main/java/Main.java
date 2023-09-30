@@ -1,5 +1,5 @@
 import com.formdev.flatlaf.FlatDarkLaf;
-import logger.Log;
+import ru.sgugt.logger.Log;
 
 import javax.swing.*;
 import java.awt.*;

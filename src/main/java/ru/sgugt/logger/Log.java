@@ -1,4 +1,4 @@
-package logger;
+package ru.sgugt.logger;
 
 import lombok.Getter;
 

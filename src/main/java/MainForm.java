@@ -1,7 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import logger.Log;
+import ru.sgugt.logger.Log;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -91,8 +91,9 @@ public class MainForm implements Runnable {
 
     private HttpResponse postRequest() {
         HttpResponse response;
-        String translateEndpoint = "https://translate.api.cloud.yandex.net/translate/v2/translate";
         String apiKey = "AQVN3BDYAydEHCgIM-NYR4OPN5UvryzXoMC8EXMI";
+        String translateEndpoint = "https://translate.api.cloud.yandex.net/translate/v2/translate";
+
         String textToTranslate = fieldForTranslate.getText();
 
         String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
