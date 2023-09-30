@@ -1,6 +1,8 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import ru.sgugt.capture.ScreenCapture;
+import ru.sgugt.http.response.TranslateResponse;
 import ru.sgugt.logger.Log;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -9,6 +11,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
+import ru.sgugt.http.request.PostTranslateRequest;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,15 +36,23 @@ public class MainForm implements Runnable {
     private JLabel targetLanguage;
     private JComboBox<SupportedLanguages> chooseTargetLanguageComboBox;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
-
     private final Log log;
+    private ScreenCapture screenCapture;
+    private final PostTranslateRequest postTranslateRequest = new PostTranslateRequest();
+    private final TranslateResponse translateResponse = new TranslateResponse();
 
     public MainForm(Log log) {
         this.log = log;
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                createRequest();
+                String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
+                String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
+                String translatedText = translateResponse.get(postTranslateRequest.create(fieldForTranslate.getText(),sourceLang, targetLang));
+                if (translatedText != null) {
+                    translatedField.setText(translatedText);
+                }
+
             }
         });
     }
@@ -63,62 +75,10 @@ public class MainForm implements Runnable {
         f.setAlwaysOnTop(true);
         f.setLocationRelativeTo(null);
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        screenCapture = new ScreenCapture();
 
     }
 
-    private void createRequest() {
-
-        HttpResponse response = postRequest();
-        try {
-            if ( response != null && response.getStatusLine().getStatusCode() == 200 ) {
-                // Parse and show the translated text
-                String responseBody = EntityUtils.toString(response.getEntity());
-                Gson gson = new Gson();
-                JsonObject responseEntity = gson.fromJson(responseBody, JsonObject.class);
-                JsonArray translationsArr = responseEntity.get("translations").getAsJsonArray();
-                JsonObject text = translationsArr.get(0).getAsJsonObject();
-                String translatedText = text.get("text").getAsString();
-                translatedField.setText(translatedText);
-            } else {
-                System.err.println("Failed to translate text. HTTP Status Code: " + response.getStatusLine().getStatusCode());
-            }
-        }
-        catch ( IOException e ) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private HttpResponse postRequest() {
-        HttpResponse response;
-        String apiKey = "AQVN3BDYAydEHCgIM-NYR4OPN5UvryzXoMC8EXMI";
-        String translateEndpoint = "https://translate.api.cloud.yandex.net/translate/v2/translate";
-
-        String textToTranslate = fieldForTranslate.getText();
-
-        String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
-        String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
-        try {
-            // Create an HttpClient
-            HttpClient httpClient = HttpClients.createDefault();
-            HttpPost postRequest = new HttpPost(translateEndpoint);
-            JsonArray jsonArray = new JsonArray();
-            jsonArray.add(textToTranslate);
-            JsonObject requestBody = new JsonObject();
-            requestBody.addProperty("sourceLanguageCode", sourceLang);
-            requestBody.addProperty("targetLanguageCode", targetLang);
-            requestBody.add("texts", jsonArray);
-
-            postRequest.setHeader("Content-Type", "application/json");
-            postRequest.setEntity(new StringEntity(requestBody.toString(), ContentType.APPLICATION_JSON));
-            postRequest.setHeader("Authorization", "Api-Key " + apiKey);
-            response = httpClient.execute(postRequest);
-            return response;
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     private void initializeSupportedLanguages() {
         supportedLanguagesList.add(SupportedLanguages.English);
