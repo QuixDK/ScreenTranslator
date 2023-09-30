@@ -10,7 +10,7 @@
     </properties>
     <border type="none"/>
     <children>
-      <component id="b6c79" class="javax.swing.JButton" binding="submitButton">
+      <component id="b6c79" class="javax.swing.JButton" binding="translateButton">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -50,7 +50,7 @@
           <text value="Label"/>
         </properties>
       </component>
-      <component id="3327" class="javax.swing.JTextArea" binding="translatedField">
+      <component id="3327" class="javax.swing.JTextArea" binding="fieldForTranslatedText">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>
@@ -58,7 +58,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="f0b49" class="javax.swing.JTextArea" binding="fieldForTranslate">
+      <component id="f0b49" class="javax.swing.JTextArea" binding="fieldForTextToTranslate">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>

@@ -1,16 +1,6 @@
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import ru.sgugt.capture.ScreenCapture;
 import ru.sgugt.http.response.TranslateResponse;
 import ru.sgugt.logger.Log;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import ru.sgugt.http.request.PostTranslateRequest;
 
@@ -20,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -28,9 +17,9 @@ import java.util.Objects;
 public class MainForm implements Runnable {
 
     private JPanel MainPanel;
-    private JButton submitButton;
-    private JTextArea translatedField;
-    private JTextArea fieldForTranslate;
+    private JButton translateButton;
+    private JTextArea fieldForTranslatedText;
+    private JTextArea fieldForTextToTranslate;
     private JComboBox<SupportedLanguages> chooseSourceLanguageComboBox;
     private JLabel sourceLanguage;
     private JLabel targetLanguage;
@@ -43,14 +32,14 @@ public class MainForm implements Runnable {
 
     public MainForm(Log log) {
         this.log = log;
-        submitButton.addActionListener(new ActionListener() {
+        translateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
                 String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
-                String translatedText = translateResponse.get(postTranslateRequest.create(fieldForTranslate.getText(),sourceLang, targetLang));
+                String translatedText = translateResponse.get(postTranslateRequest.create(fieldForTextToTranslate.getText(),sourceLang, targetLang));
                 if (translatedText != null) {
-                    translatedField.setText(translatedText);
+                    fieldForTranslatedText.setText(translatedText);
                 }
 
             }
@@ -60,21 +49,21 @@ public class MainForm implements Runnable {
     public void run() {
 
         log.GetLogger().info("Logger has been success created");
-        JFrame f = new JFrame();
-        setFrameSize(f);
-        initializeTexts(f);
+        JFrame mainFrame = new JFrame();
+        setFrameSize(mainFrame);
+        initializeTexts(mainFrame);
         initializeSupportedLanguages();
-        translatedField.setLineWrap(true);
-        translatedField.setWrapStyleWord(true);
-        fieldForTranslate.setLineWrap(true);
-        fieldForTranslate.setWrapStyleWord(true);
+        fieldForTranslatedText.setLineWrap(true);
+        fieldForTranslatedText.setWrapStyleWord(true);
+        fieldForTextToTranslate.setLineWrap(true);
+        fieldForTextToTranslate.setWrapStyleWord(true);
         sourceLanguage.setVisible(true);
         targetLanguage.setVisible(true);
-        f.add(MainPanel);
-        f.setVisible(true);
-        f.setAlwaysOnTop(true);
-        f.setLocationRelativeTo(null);
-        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mainFrame.add(MainPanel);
+        mainFrame.setVisible(true);
+        mainFrame.setAlwaysOnTop(true);
+        mainFrame.setLocationRelativeTo(null);
+        mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         screenCapture = new ScreenCapture();
 
     }
@@ -92,13 +81,13 @@ public class MainForm implements Runnable {
 
     private void initializeTexts(Frame f) {
         f.setTitle("Screen Translator");
-        submitButton.setText("Translate");
+        translateButton.setText("Translate");
         sourceLanguage.setText("Source language");
         targetLanguage.setText("Target language");
-        fieldForTranslate.setToolTipText("Write text for translate");
-        translatedField.setToolTipText("Translated text");
-        setPlaceHolderForTextFields(fieldForTranslate, "Write text for translate");
-        setPlaceHolderForTextFields(translatedField, "Translated text");
+        fieldForTextToTranslate.setToolTipText("Write text for translate");
+        fieldForTranslatedText.setToolTipText("Translated text");
+        setPlaceHolderForTextFields(fieldForTextToTranslate, "Write text for translate");
+        setPlaceHolderForTextFields(fieldForTranslatedText, "Translated text");
     }
 
     private void setFrameSize(Frame f) {
