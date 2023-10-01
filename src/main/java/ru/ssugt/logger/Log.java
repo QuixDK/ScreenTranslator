@@ -1,6 +1,4 @@
-package ru.sgugt.logger;
-
-import lombok.Getter;
+package ru.ssugt.logger;
 
 import java.io.File;
 import java.nio.file.Files;

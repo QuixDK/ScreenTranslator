@@ -1,15 +1,10 @@
-package ru.sgugt.http.request;
+package ru.ssugt.http.request;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-
-import java.util.Objects;
 
 public class PostTranslateRequest {
 

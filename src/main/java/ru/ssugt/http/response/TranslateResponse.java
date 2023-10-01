@@ -1,4 +1,4 @@
-package ru.sgugt.http.response;
+package ru.ssugt.http.response;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

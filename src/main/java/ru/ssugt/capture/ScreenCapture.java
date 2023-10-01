@@ -1,4 +1,4 @@
-package ru.sgugt.capture;
+package ru.ssugt.capture;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

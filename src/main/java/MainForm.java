@@ -1,8 +1,10 @@
-import ru.sgugt.capture.ScreenCapture;
-import ru.sgugt.http.response.TranslateResponse;
-import ru.sgugt.logger.Log;
+import ru.ssugt.capture.ScreenCapture;
+import ru.ssugt.http.response.TranslateResponse;
+import ru.ssugt.i18n.SupportedLanguages;
+import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
+import ru.ssugt.logger.Log;
 
-import ru.sgugt.http.request.PostTranslateRequest;
+import ru.ssugt.http.request.PostTranslateRequest;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,17 +29,18 @@ public class MainForm implements Runnable {
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     private final Log log;
     private ScreenCapture screenCapture;
-    private final PostTranslateRequest postTranslateRequest = new PostTranslateRequest();
-    private final TranslateResponse translateResponse = new TranslateResponse();
 
-    public MainForm(Log log) {
+    private final YandexTranslateApi yandexTranslateApi;
+
+    public MainForm(Log log, YandexTranslateApi yandexTranslateApi) {
         this.log = log;
+        this.yandexTranslateApi = yandexTranslateApi;
         translateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
                 String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
-                String translatedText = translateResponse.get(postTranslateRequest.create(fieldForTextToTranslate.getText(),sourceLang, targetLang));
+                String translatedText = yandexTranslateApi.getTranslatedText(fieldForTextToTranslate.getText(),sourceLang, targetLang);
                 if (translatedText != null) {
                     fieldForTranslatedText.setText(translatedText);
                 }
