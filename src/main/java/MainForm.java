@@ -1,8 +1,9 @@
-import ru.sgugt.capture.ScreenCapture;
-import ru.sgugt.http.response.TranslateResponse;
-import ru.sgugt.logger.Log;
+import ru.ssugt.capture.ScreenCapture;
+import ru.ssugt.integration.yandex.translator.i18n.SupportedLanguages;
+import ru.ssugt.integration.yandex.translator.api.response.TranslateResponse;
+import ru.ssugt.logger.Log;
 
-import ru.sgugt.http.request.PostTranslateRequest;
+import ru.ssugt.integration.yandex.translator.api.request.PostTranslateRequest;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,6 +66,9 @@ public class MainForm implements Runnable {
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         screenCapture = new ScreenCapture();
+        String currentDirectory = System.getProperty("user.dir");
+        //Эта строчка запускает нерабочий скрипт
+        //screenCapture.getScreenshot(0, 0, 0,0, currentDirectory + "/test.png");
 
     }
 

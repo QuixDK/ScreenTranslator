@@ -1,3 +1,5 @@
+package ru.ssugt.integration.yandex.translator.i18n;
+
 public enum SupportedLanguages {
     English("en"),
     Russian("ru"),

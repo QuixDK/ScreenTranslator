@@ -1,4 +1,4 @@
-package ru.sgugt.http.response;
+package ru.ssugt.integration.yandex.translator.api.response;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
