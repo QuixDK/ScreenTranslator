@@ -6,10 +6,7 @@ import ru.ssugt.logger.Log;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -24,11 +21,13 @@ public class MainForm implements Runnable {
     private JLabel sourceLanguage;
     private JLabel targetLanguage;
     private JComboBox<SupportedLanguages> chooseTargetLanguageComboBox;
+    private JButton translateAreaButton;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     private final Log log;
     private ScreenCapture screenCapture;
     private final YandexTranslateApi yandexTranslateApi;
     private final YandexVisionApi yandexVisionApi;
+    JFrame mainFrame = new JFrame();
 
     public MainForm(Log log, YandexTranslateApi yandexTranslateApi, YandexVisionApi yandexVisionApi) {
         this.log = log;
@@ -46,12 +45,69 @@ public class MainForm implements Runnable {
 
             }
         });
+
+        translateAreaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+
+                mainFrame.addMouseListener(new MouseListener() {
+                    double x = 0;
+                    double y = 0;
+
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+
+
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        x = MouseInfo.getPointerInfo().getLocation().getX();
+                        y = MouseInfo.getPointerInfo().getLocation().getY();
+                        System.out.println("Клик мышкой " + x + " " + y);
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        double x2 = MouseInfo.getPointerInfo().getLocation().getX();
+                        double y2 = MouseInfo.getPointerInfo().getLocation().getY();
+                        double width;
+                        double height;
+                        if ( x2 >= x ) {
+                            width = x2 - x;
+                        } else {
+                            width = x - x2;
+                            x = x2;
+                        }
+                        if ( y2 >= y ) {
+                            height = y2 - y;
+                        } else {
+                            height = y - y2;
+                            y = y2;
+                        }
+                        screenCapture.getScreenshot(x, y, width, height, "testscreen.jpg");
+                        System.out.println("Мышка отпущена " + x + " " + y + " " + width + " " + height);
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+
+                    }
+                });
+            }
+        });
     }
 
     public void run() {
 
         log.GetLogger().info("Logger has been success created");
-        JFrame mainFrame = new JFrame();
+
         setFrameSize(mainFrame);
         initializeTexts(mainFrame);
         initializeSupportedLanguages();
