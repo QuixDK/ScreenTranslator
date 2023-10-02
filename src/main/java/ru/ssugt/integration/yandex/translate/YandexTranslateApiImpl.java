@@ -63,10 +63,11 @@ public class YandexTranslateApiImpl implements YandexTranslateApi {
 
     private HttpPost createPostRequest(String sourceText, String sourceLang, String targetLang) {
         try {
-            HttpPost postRequest = new HttpPost(apiConfig.getHost());
+            System.out.println(apiConfig.host());
+            HttpPost postRequest = new HttpPost(apiConfig.host());
 
             postRequest.setHeader("Content-Type", "application/json");
-            postRequest.setHeader("Authorization", "Api-Key " + apiConfig.getApiKey());
+            postRequest.setHeader("Authorization", "Api-Key " + apiConfig.apiKey());
 
             JsonObject requestBody = this.createRequestBody(sourceText, sourceLang, targetLang);
 

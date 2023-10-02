@@ -1,10 +1,8 @@
 import ru.ssugt.capture.ScreenCapture;
-import ru.ssugt.http.response.TranslateResponse;
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
+import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 import ru.ssugt.logger.Log;
-
-import ru.ssugt.http.request.PostTranslateRequest;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,12 +27,13 @@ public class MainForm implements Runnable {
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     private final Log log;
     private ScreenCapture screenCapture;
-
     private final YandexTranslateApi yandexTranslateApi;
+    private final YandexVisionApi yandexVisionApi;
 
-    public MainForm(Log log, YandexTranslateApi yandexTranslateApi) {
+    public MainForm(Log log, YandexTranslateApi yandexTranslateApi, YandexVisionApi yandexVisionApi) {
         this.log = log;
         this.yandexTranslateApi = yandexTranslateApi;
+        this.yandexVisionApi = yandexVisionApi;
         translateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

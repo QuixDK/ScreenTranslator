@@ -1,11 +1,17 @@
 import com.formdev.flatlaf.FlatDarkLaf;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApiConfig;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApiImpl;
+import ru.ssugt.integration.yandex.vision.YandexVisionApi;
+import ru.ssugt.integration.yandex.vision.YandexVisionApiConfig;
+import ru.ssugt.integration.yandex.vision.YandexVisionApiImpl;
 import ru.ssugt.logger.Log;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Main {
 
@@ -22,11 +28,27 @@ public class Main {
             SwingUtilities.updateComponentTreeUI(window);
         }
 
-        // в конфиг типа .yaml или .properties унести надо
-        YandexTranslateApiConfig yandexTranslateApiConfig = new YandexTranslateApiConfig(
-                "AQVN3BDYAydEHCgIM-NYR4OPN5UvryzXoMC8EXMI",
-                "https://translate.api.cloud.yandex.net/translate/v2/translate");
-        YandexTranslateApi yandexTranslateApi = new YandexTranslateApiImpl(yandexTranslateApiConfig);
-        SwingUtilities.invokeLater(new MainForm(log, yandexTranslateApi));
+        PropertiesConfiguration config = new PropertiesConfiguration();
+        try {
+            Path currRelativePath = Paths.get("");
+            config.load(currRelativePath + "main//resources//application.properties");
+            YandexTranslateApiConfig yandexTranslateApiConfig = new YandexTranslateApiConfig(
+                    config.getString("apiKey"),
+                    config.getString("translateHost"));
+            YandexTranslateApi yandexTranslateApi = new YandexTranslateApiImpl(yandexTranslateApiConfig);
+
+            YandexVisionApiConfig yandexVisionApiConfig = new YandexVisionApiConfig(
+                    config.getString("IAMToken"),
+                    config.getString("visionHost"),
+                    config.getString("folderId"));
+            YandexVisionApi yandexVisionApi = new YandexVisionApiImpl(yandexVisionApiConfig);
+
+            SwingUtilities.invokeLater(new MainForm(log, yandexTranslateApi, yandexVisionApi));
+        }
+        catch ( Exception e ) {
+            System.out.println("Config file is not found");
+        }
+
+
     }
 }
