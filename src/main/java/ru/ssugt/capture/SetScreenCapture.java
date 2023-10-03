@@ -8,7 +8,7 @@ import java.nio.file.Files;
 
 import org.apache.commons.codec.binary.Base64;
 
-public class ScreenCapture {
+public class SetScreenCapture {
 
     public byte[] getScreenshot(double x, double y, double width, double height, String path) {
 

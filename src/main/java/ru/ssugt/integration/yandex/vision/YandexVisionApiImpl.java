@@ -12,6 +12,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class YandexVisionApiImpl implements YandexVisionApi{
@@ -21,11 +22,11 @@ public class YandexVisionApiImpl implements YandexVisionApi{
         this.apiConfig = apiConfig;
     }
 
-    public String recognizeText(String mimeType, List<String> languagesCodes, String model, String content) {
+    public String recognizeText(String mimeType, List<String> languagesCodes, String model, byte[] content) {
         return callYandexVisionApi(mimeType, languagesCodes, model, content);
     }
 
-    private String callYandexVisionApi(String mimeType, List<String> languagesCodes, String model, String content) {
+    private String callYandexVisionApi(String mimeType, List<String> languagesCodes, String model, byte[] content) {
         try {
             HttpPost postRequest = createPostRequest(mimeType, languagesCodes, model, content);
 
@@ -37,13 +38,14 @@ public class YandexVisionApiImpl implements YandexVisionApi{
                 return null;
             }
 
-            if (response.getStatusLine().getStatusCode() != 200) {
+            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 503) {
                 System.err.println("Failed to translate text. HTTP Status Code: " + response.getStatusLine().getStatusCode());
-
+                System.out.println("\n" + response.getStatusLine().getReasonPhrase());
                 throw new RuntimeException(String.format("Failed to translate text. HTTP Status Code=%d",
                         response.getStatusLine().getStatusCode()));
             }
-
+            //Unmarshall
+            System.out.println(response.getStatusLine().getStatusCode());
             // Parse and show the translated text
 //            String responseBody = EntityUtils.toString(response.getEntity());
 //
@@ -62,7 +64,7 @@ public class YandexVisionApiImpl implements YandexVisionApi{
         return null;
     }
 
-    private HttpPost createPostRequest(String mimeType, List<String> languagesCodes, String model, String content) {
+    private HttpPost createPostRequest(String mimeType, List<String> languagesCodes, String model, byte[] content) {
         try {
             HttpPost postRequest = new HttpPost(apiConfig.host());
 
@@ -83,12 +85,12 @@ public class YandexVisionApiImpl implements YandexVisionApi{
         return null;
     }
 
-    private JsonObject createRequestBody(String mimeType, List<String> languageCodes, String model, String content) {
+    private JsonObject createRequestBody(String mimeType, List<String> languageCodes, String model, byte[] content) {
         JsonObject requestBody = new JsonObject();
-
+        String s = new String(content, StandardCharsets.UTF_8);
         requestBody.addProperty("mimeType", mimeType);
         requestBody.addProperty("model", model);
-        requestBody.addProperty("content", content);
+        requestBody.addProperty("content", s);
 
         JsonArray jsonArray = new JsonArray();
         for (int i = 0; i < languageCodes.size(); i++) {

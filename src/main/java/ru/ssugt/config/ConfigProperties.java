@@ -53,6 +53,7 @@ public class ConfigProperties {
             }
             StringBuffer stringBuffer = new StringBuffer(sb.toString());
             IAMToken = stringBuffer.substring(index.get(2)+1, index.get(3));
+            System.out.println(IAMToken);
             config.setProperty("IAMToken", IAMToken);
             YandexVisionApiConfig yandexVisionApiConfig = new YandexVisionApiConfig(
                     config.getString("IAMToken"),

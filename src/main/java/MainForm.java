@@ -1,4 +1,4 @@
-import ru.ssugt.capture.ScreenCapture;
+import ru.ssugt.capture.BroadcastScreen;
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
@@ -22,12 +22,15 @@ public class MainForm implements Runnable {
     private JLabel targetLanguage;
     private JComboBox<SupportedLanguages> chooseTargetLanguageComboBox;
     private JButton translateAreaButton;
+    private JButton stopTranslating;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     private final Log log;
-    private ScreenCapture screenCapture;
+
     private final YandexTranslateApi yandexTranslateApi;
     private final YandexVisionApi yandexVisionApi;
+    BroadcastScreen broadcastScreen;
     JFrame mainFrame = new JFrame();
+    Thread t1;
 
     public MainForm(Log log, YandexTranslateApi yandexTranslateApi, YandexVisionApi yandexVisionApi) {
         this.log = log;
@@ -46,9 +49,19 @@ public class MainForm implements Runnable {
             }
         });
 
+        stopTranslating.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (t1.isAlive()) {
+                    t1.interrupt();
+                }
+            }
+        });
+
         translateAreaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
             JFrame areaForTranslation = new JFrame();
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             areaForTranslation.setSize(screenSize.width, screenSize.height);
@@ -56,6 +69,7 @@ public class MainForm implements Runnable {
             areaForTranslation.setUndecorated(true);
             areaForTranslation.setOpacity(0.5f);
             areaForTranslation.setVisible(true);
+
 
 
 
@@ -95,7 +109,22 @@ public class MainForm implements Runnable {
                             height = y - y2;
                             y = y2;
                         }
-                        screenCapture.getScreenshot(x, y, width, height, "testscreen.jpg");
+//
+                        t1 = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                while (true) {
+                                    broadcastScreen = new BroadcastScreen(x, y, width, height, yandexVisionApi);
+                                    broadcastScreen.run();
+                                    try {
+                                        Thread.sleep(3000);
+                                    } catch ( InterruptedException ex ) {
+                                        System.out.println("Трансляция заверщена");
+                                    }
+                                }
+                            }
+                        });
+                        t1.start();
                         System.out.println("Мышка отпущена " + x + " " + y + " " + width + " " + height);
                     }
 
@@ -131,7 +160,7 @@ public class MainForm implements Runnable {
         mainFrame.setAlwaysOnTop(true);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        screenCapture = new ScreenCapture();
+
 
     }
 
