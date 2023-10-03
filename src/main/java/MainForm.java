@@ -25,26 +25,16 @@ public class MainForm implements Runnable {
     private JButton stopTranslating;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     private final Log log;
-
-    private final YandexTranslateApi yandexTranslateApi;
-    private final YandexVisionApi yandexVisionApi;
-    BroadcastScreen broadcastScreen;
+    private BroadcastScreen broadcastScreen;
     JFrame mainFrame = new JFrame();
-    Thread t1;
+    private Thread threadForBroadcast;
 
     public MainForm(Log log, YandexTranslateApi yandexTranslateApi, YandexVisionApi yandexVisionApi) {
         this.log = log;
-        this.yandexTranslateApi = yandexTranslateApi;
-        this.yandexVisionApi = yandexVisionApi;
         translateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
-                String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
-                String translatedText = yandexTranslateApi.getTranslatedText(fieldForTextToTranslate.getText(),sourceLang, targetLang);
-                if (translatedText != null) {
-                    fieldForTranslatedText.setText(translatedText);
-                }
+                setTranslatedText(fieldForTextToTranslate.getText(), yandexTranslateApi);
 
             }
         });
@@ -52,8 +42,8 @@ public class MainForm implements Runnable {
         stopTranslating.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (t1.isAlive()) {
-                    t1.interrupt();
+                if ( threadForBroadcast.isAlive() ) {
+                    threadForBroadcast.interrupt();
                 }
             }
         });
@@ -62,16 +52,13 @@ public class MainForm implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-            JFrame areaForTranslation = new JFrame();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            areaForTranslation.setSize(screenSize.width, screenSize.height);
-            areaForTranslation.setLocation(screenSize.width/2-areaForTranslation.getSize().width/2, screenSize.height/2-areaForTranslation.getSize().height/2);
-            areaForTranslation.setUndecorated(true);
-            areaForTranslation.setOpacity(0.5f);
-            areaForTranslation.setVisible(true);
-
-
-
+                JFrame areaForTranslation = new JFrame();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                areaForTranslation.setSize(screenSize.width, screenSize.height);
+                areaForTranslation.setLocation(screenSize.width / 2 - areaForTranslation.getSize().width / 2, screenSize.height / 2 - areaForTranslation.getSize().height / 2);
+                areaForTranslation.setUndecorated(true);
+                areaForTranslation.setOpacity(0.5f);
+                areaForTranslation.setVisible(true);
 
                 areaForTranslation.addMouseListener(new MouseListener() {
                     double x = 0;
@@ -109,22 +96,20 @@ public class MainForm implements Runnable {
                             height = y - y2;
                             y = y2;
                         }
-//
-                        t1 = new Thread(new Runnable() {
+
+                        threadForBroadcast = new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 while (true) {
                                     broadcastScreen = new BroadcastScreen(x, y, width, height, yandexVisionApi);
-                                    broadcastScreen.run();
-                                    try {
-                                        Thread.sleep(3000);
-                                    } catch ( InterruptedException ex ) {
-                                        System.out.println("Трансляция заверщена");
+                                    String recognizedText = broadcastScreen.start();
+                                    if (recognizedText != null && !recognizedText.equals("")) {
+                                        setTranslatedText(recognizedText, yandexTranslateApi);
                                     }
                                 }
                             }
                         });
-                        t1.start();
+                        threadForBroadcast.start();
                         System.out.println("Мышка отпущена " + x + " " + y + " " + width + " " + height);
                     }
 
@@ -142,6 +127,18 @@ public class MainForm implements Runnable {
         });
     }
 
+    private void setTranslatedText(String text, YandexTranslateApi yandexTranslateApi) {
+        if (text == null) {
+            return;
+        }
+        String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
+        String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
+        String translatedText = yandexTranslateApi.getTranslatedText(text, sourceLang, targetLang);
+        if ( translatedText != null ) {
+            fieldForTranslatedText.setText(translatedText);
+        }
+    }
+
     public void run() {
 
         log.GetLogger().info("Logger has been success created");
@@ -157,7 +154,7 @@ public class MainForm implements Runnable {
         targetLanguage.setVisible(true);
         mainFrame.add(MainPanel);
         mainFrame.setVisible(true);
-        mainFrame.setAlwaysOnTop(true);
+        //mainFrame.setAlwaysOnTop(true);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 

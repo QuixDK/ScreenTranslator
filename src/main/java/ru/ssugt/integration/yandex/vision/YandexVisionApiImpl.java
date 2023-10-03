@@ -2,6 +2,7 @@ package ru.ssugt.integration.yandex.vision;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -15,18 +16,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class YandexVisionApiImpl implements YandexVisionApi{
+public class YandexVisionApiImpl implements YandexVisionApi {
     private final YandexVisionApiConfig apiConfig;
 
     public YandexVisionApiImpl(YandexVisionApiConfig apiConfig) {
         this.apiConfig = apiConfig;
     }
 
-    public String recognizeText(String mimeType, List<String> languagesCodes, String model, byte[] content) {
+    public StringBuilder recognizeText(String mimeType, List<String> languagesCodes, String model, byte[] content) {
         return callYandexVisionApi(mimeType, languagesCodes, model, content);
     }
 
-    private String callYandexVisionApi(String mimeType, List<String> languagesCodes, String model, byte[] content) {
+    private StringBuilder callYandexVisionApi(String mimeType, List<String> languagesCodes, String model, byte[] content) {
         try {
             HttpPost postRequest = createPostRequest(mimeType, languagesCodes, model, content);
 
@@ -34,30 +35,53 @@ public class YandexVisionApiImpl implements YandexVisionApi{
 
             HttpResponse response = httpClient.execute(postRequest);
 
-            if (response == null) {
+            if ( response == null ) {
                 return null;
             }
 
-            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 503) {
+            if ( response.getStatusLine().getStatusCode() != 503 && response.getStatusLine().getStatusCode() != 200 ) {
                 System.err.println("Failed to translate text. HTTP Status Code: " + response.getStatusLine().getStatusCode());
                 System.out.println("\n" + response.getStatusLine().getReasonPhrase());
                 throw new RuntimeException(String.format("Failed to translate text. HTTP Status Code=%d",
                         response.getStatusLine().getStatusCode()));
             }
+
+            if ( response.getStatusLine().getStatusCode() == 200 ) {
+                String responseBody = EntityUtils.toString(response.getEntity());
+
+                Gson gson = new Gson();
+                JsonObject responseEntity = gson.fromJson(responseBody, JsonObject.class);
+
+                JsonObject result = responseEntity.get("result").getAsJsonObject();
+                JsonObject textAnnotation = result.get("text_annotation").getAsJsonObject();
+                JsonArray blocks = textAnnotation.get("blocks").getAsJsonArray();
+                JsonArray lines;
+                JsonArray alternatives;
+                JsonElement alternativesElement;
+                JsonObject blockElement;
+                StringBuilder stringBuilder = new StringBuilder();
+                for ( int i = 0; i < blocks.size(); i++ ) {
+                    blockElement = blocks.get(i).getAsJsonObject();
+                    lines = blockElement.get("lines").getAsJsonArray();
+                    for ( int j = 0; j < lines.size(); j++ ) {
+                        JsonObject linesElement;
+                        linesElement = lines.get(j).getAsJsonObject();
+                        alternatives = linesElement.get("alternatives").getAsJsonArray();
+                        for ( int k = 0; k < alternatives.size(); k++ ) {
+                            alternativesElement = alternatives.get(k).getAsJsonObject();
+                            String string = alternativesElement.getAsJsonObject().get("text").getAsString();
+                            stringBuilder.append(string);
+                            stringBuilder.append("\n");
+                        }
+                    }
+                }
+                return stringBuilder;
+
+            }
             //Unmarshall
             System.out.println(response.getStatusLine().getStatusCode());
-            // Parse and show the translated text
-//            String responseBody = EntityUtils.toString(response.getEntity());
-//
-//            Gson gson = new Gson();
-//            JsonObject responseEntity = gson.fromJson(responseBody, JsonObject.class);
-//
-//            JsonArray translationsArr = responseEntity.get("translations").getAsJsonArray();
-//
-//            JsonObject text = translationsArr.get(0).getAsJsonObject();
-//            return text.get("text").getAsString();
 
-        } catch ( IOException e) {
+        } catch ( IOException e ) {
             e.printStackTrace();
         }
 
@@ -79,7 +103,7 @@ public class YandexVisionApiImpl implements YandexVisionApi{
 
             return postRequest;
 
-        } catch (Exception e) {
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
         return null;
@@ -93,7 +117,7 @@ public class YandexVisionApiImpl implements YandexVisionApi{
         requestBody.addProperty("content", s);
 
         JsonArray jsonArray = new JsonArray();
-        for (int i = 0; i < languageCodes.size(); i++) {
+        for ( int i = 0; i < languageCodes.size(); i++ ) {
             jsonArray.add(languageCodes.get(i));
         }
 

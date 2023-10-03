@@ -15,7 +15,6 @@ import java.util.ArrayList;
 public class ConfigProperties {
 
 
-
     public YandexTranslateApi initYandexTranslate() {
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
@@ -25,12 +24,12 @@ public class ConfigProperties {
                     config.getString("apiKey"),
                     config.getString("translateHost"));
             return new YandexTranslateApiImpl(yandexTranslateApiConfig);
-        }
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             System.out.println("Config file is not found");
             return null;
         }
     }
+
     public YandexVisionApi initYandexVision() {
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
@@ -42,26 +41,24 @@ public class ConfigProperties {
             StringBuilder sb = new StringBuilder();
             java.util.List<Integer> index = new ArrayList<>();
             int i = 0;
-            for (int ch; (ch = process.getInputStream().read()) != -1; ) {
+            for ( int ch; (ch = process.getInputStream().read()) != -1; ) {
                 sb.append((char) ch);
                 char c = (char) ch;
 
-                if (c == '\"') {
+                if ( c == '\"' ) {
                     index.add(i);
                 }
                 i++;
             }
             StringBuffer stringBuffer = new StringBuffer(sb.toString());
-            IAMToken = stringBuffer.substring(index.get(2)+1, index.get(3));
-            System.out.println(IAMToken);
+            IAMToken = stringBuffer.substring(index.get(2) + 1, index.get(3));
             config.setProperty("IAMToken", IAMToken);
             YandexVisionApiConfig yandexVisionApiConfig = new YandexVisionApiConfig(
                     config.getString("IAMToken"),
                     config.getString("visionHost"),
                     config.getString("folderId"));
             return new YandexVisionApiImpl(yandexVisionApiConfig);
-        }
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             System.out.println("Config file is not found");
             return null;
         }

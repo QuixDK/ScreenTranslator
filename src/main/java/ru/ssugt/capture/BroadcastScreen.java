@@ -1,18 +1,21 @@
 package ru.ssugt.capture;
 
+import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BroadcastScreen implements Runnable{
+public class BroadcastScreen  {
 
-    double x;
-    double y;
-    double width;
-    double height;
+    private final double x;
+    private final double y;
+    private final double width;
+    private final double height;
+    private final YandexVisionApi yandexVisionApi;
+    private byte[] prevPicture;
+    private StringBuilder text;
 
-    YandexVisionApi yandexVisionApi;
 
     public BroadcastScreen(double x, double y, double width, double height, YandexVisionApi yandexVisionApi) {
         this.x = x;
@@ -20,14 +23,25 @@ public class BroadcastScreen implements Runnable{
         this.width = width;
         this.height = height;
         this.yandexVisionApi = yandexVisionApi;
+
     }
-    @Override
-    public void run() {
+    public String start() {
         SetScreenCapture screenCapture = new SetScreenCapture();
         byte[] pictureInBase64 = screenCapture.getScreenshot(x, y, width, height, "testscreen.jpg");
-        List<String> languageCodes = new ArrayList<>();
-        languageCodes.add("*");
-        yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
+        if ( pictureInBase64 != prevPicture ) {
+            List<String> languageCodes = new ArrayList<>();
+            languageCodes.add("*");
+            text = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
+            if (text != null) {
+                text = new StringBuilder(text.toString());
+                return text.toString();
+            }
+        }
+        prevPicture = pictureInBase64;
+        if (text != null) {
+            return text.toString();
+        }
+        return null;
     }
 
 }
