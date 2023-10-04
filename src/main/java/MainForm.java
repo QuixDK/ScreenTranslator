@@ -1,3 +1,4 @@
+import ru.ssugt.TranslatedTextForm;
 import ru.ssugt.capture.BroadcastScreen;
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
@@ -28,9 +29,15 @@ public class MainForm implements Runnable {
     private BroadcastScreen broadcastScreen;
     JFrame mainFrame = new JFrame();
     private Thread threadForBroadcast;
+    private TranslatedTextForm textForm;
+
+    private YandexTranslateApi yandexTranslateApi;
+    private  YandexVisionApi yandexVisionApi;
 
     public MainForm(Log log, YandexTranslateApi yandexTranslateApi, YandexVisionApi yandexVisionApi) {
         this.log = log;
+        this.yandexVisionApi = yandexVisionApi;
+        this.yandexTranslateApi = yandexTranslateApi;
         translateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -102,9 +109,15 @@ public class MainForm implements Runnable {
                             public void run() {
                                 while (true) {
                                     broadcastScreen = new BroadcastScreen(x, y, width, height, yandexVisionApi);
-                                    String recognizedText = broadcastScreen.start();
+                                    String recognizedText = broadcastScreen.getFrame();
                                     if (recognizedText != null && !recognizedText.equals("")) {
-                                        setTranslatedText(recognizedText, yandexTranslateApi);
+                                        textForm.setTranslatedText(recognizedText, yandexTranslateApi, chooseSourceLanguageComboBox, chooseTargetLanguageComboBox);
+                                    }
+                                    try {
+                                        Thread.sleep(1000);
+                                    }
+                                    catch ( InterruptedException e ) {
+                                        break;
                                     }
                                 }
                             }
@@ -127,17 +140,7 @@ public class MainForm implements Runnable {
         });
     }
 
-    private void setTranslatedText(String text, YandexTranslateApi yandexTranslateApi) {
-        if (text == null) {
-            return;
-        }
-        String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
-        String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
-        String translatedText = yandexTranslateApi.getTranslatedText(text, sourceLang, targetLang);
-        if ( translatedText != null ) {
-            fieldForTranslatedText.setText(translatedText);
-        }
-    }
+
 
     public void run() {
 
@@ -156,9 +159,22 @@ public class MainForm implements Runnable {
         mainFrame.setVisible(true);
         //mainFrame.setAlwaysOnTop(true);
         mainFrame.setLocationRelativeTo(null);
-        mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        textForm = new TranslatedTextForm();
+        SwingUtilities.invokeLater(textForm);
 
+    }
 
+    private void setTranslatedText(String text, YandexTranslateApi yandexTranslateApi) {
+        if (text == null) {
+            return;
+        }
+        String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
+        String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
+        String translatedText = yandexTranslateApi.getTranslatedText(text, sourceLang, targetLang);
+        if ( translatedText != null ) {
+            fieldForTranslatedText.setText(translatedText);
+        }
     }
 
 

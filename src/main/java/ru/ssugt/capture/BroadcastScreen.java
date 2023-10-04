@@ -1,6 +1,5 @@
 package ru.ssugt.capture;
 
-import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class BroadcastScreen  {
         this.yandexVisionApi = yandexVisionApi;
 
     }
-    public String start() {
+    public String getFrame() {
         SetScreenCapture screenCapture = new SetScreenCapture();
         byte[] pictureInBase64 = screenCapture.getScreenshot(x, y, width, height, "testscreen.jpg");
         if ( pictureInBase64 != prevPicture ) {
