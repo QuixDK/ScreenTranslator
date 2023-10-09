@@ -30,14 +30,6 @@ public class Main {
         for ( Window window : JFrame.getWindows() ) {
             SwingUtilities.updateComponentTreeUI(window);
         }
-        EasyOCRVision easyOCRVision = new EasyOCRVision();
-        easyOCRVision.init("D:\\Java Projects\\ScreenTranslator\\testscreen.jpg");
-        TesseractOCRVision tesseractOCRVision = new TesseractOCRVision();
-        List<String> langs = new ArrayList<>();
-        langs.add("rus");
-        langs.add("eng");
-        tesseractOCRVision.init("D:\\Java Projects\\ScreenTranslator\\testscreen.jpg", langs);
-        //System.exit(0);
         YandexVisionApi yandexVisionApi = configProperties.initYandexVision();
         YandexTranslateApi yandexTranslateApi = configProperties.initYandexTranslate();
         SwingUtilities.invokeLater(new MainForm(log, yandexTranslateApi, yandexVisionApi));

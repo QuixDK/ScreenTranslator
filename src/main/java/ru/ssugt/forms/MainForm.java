@@ -2,15 +2,22 @@ package ru.ssugt.forms;
 
 import ru.ssugt.capture.BroadcastScreen;
 import ru.ssugt.i18n.SupportedLanguages;
+import ru.ssugt.integration.easyOCR.EasyOCRVision;
+import ru.ssugt.integration.tesseractOCR.TesseractOCRVision;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 import ru.ssugt.logger.Log;
+import ru.ssugt.threads.ThreadForEasyOCR;
+import ru.ssugt.threads.ThreadForTesseractOCR;
+import ru.ssugt.threads.ThreadForYandexOCR;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 
 public class MainForm implements Runnable {
@@ -29,11 +36,14 @@ public class MainForm implements Runnable {
     private final Log log;
     private BroadcastScreen broadcastScreen;
     public JFrame mainFrame = new JFrame();
-    private Thread threadForBroadcast;
+    private ThreadForYandexOCR threadForYandexOCR;
+    private ThreadForEasyOCR threadForEasyOCR;
+    private ThreadForTesseractOCR threadForTesseractOCR;
     private TranslatedTextForm textForm;
-
+    private final EasyOCRVision easyOCRVision = new EasyOCRVision();
+    private final TesseractOCRVision tesseractOCRVision = new TesseractOCRVision();
     private YandexTranslateApi yandexTranslateApi;
-    private  YandexVisionApi yandexVisionApi;
+    private YandexVisionApi yandexVisionApi;
 
     public MainForm(Log log, YandexTranslateApi yandexTranslateApi, YandexVisionApi yandexVisionApi) {
         this.log = log;
@@ -50,8 +60,14 @@ public class MainForm implements Runnable {
         stopTranslating.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if ( threadForBroadcast.isAlive() ) {
-                    threadForBroadcast.interrupt();
+                if ( threadForYandexOCR.isAlive() ) {
+                    threadForYandexOCR.interrupt();
+                }
+                if ( threadForEasyOCR.isAlive() ) {
+                    threadForEasyOCR.interrupt();
+                }
+                if ( threadForTesseractOCR.isAlive() ) {
+                    threadForTesseractOCR.interrupt();
                 }
             }
         });
@@ -104,27 +120,15 @@ public class MainForm implements Runnable {
                             height = y - y2;
                             y = y2;
                         }
-
-                        threadForBroadcast = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                while (true) {
-                                    broadcastScreen = new BroadcastScreen(x, y, width, height, yandexVisionApi);
-                                    String recognizedText = broadcastScreen.getFrame();
-                                    if (recognizedText != null && !recognizedText.equals("")) {
-                                        textForm.setTranslatedText(recognizedText, yandexTranslateApi, chooseSourceLanguageComboBox, chooseTargetLanguageComboBox);
-                                    }
-                                    try {
-                                        Thread.sleep(1000);
-                                    }
-                                    catch ( InterruptedException e ) {
-                                        break;
-                                    }
-                                }
-                            }
-                        });
-                        threadForBroadcast.start();
                         System.out.println("Мышка отпущена " + x + " " + y + " " + width + " " + height);
+                        broadcastScreen = new BroadcastScreen(x, y, width, height);
+                        CountDownLatch countDownLatch = new CountDownLatch(3);
+                        threadForYandexOCR = new ThreadForYandexOCR(broadcastScreen, yandexVisionApi,countDownLatch);
+                        threadForEasyOCR = new ThreadForEasyOCR(easyOCRVision, countDownLatch);
+                        threadForTesseractOCR = new ThreadForTesseractOCR(tesseractOCRVision, countDownLatch);
+                        threadForTesseractOCR.start();
+                        threadForYandexOCR.start();
+                        threadForEasyOCR.start();
                     }
 
                     @Override
@@ -140,7 +144,6 @@ public class MainForm implements Runnable {
             }
         });
     }
-
 
 
     public void run() {
@@ -167,7 +170,7 @@ public class MainForm implements Runnable {
     }
 
     private void setTranslatedText(String text, YandexTranslateApi yandexTranslateApi) {
-        if (text == null) {
+        if ( text == null ) {
             return;
         }
         String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;

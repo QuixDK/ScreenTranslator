@@ -6,9 +6,10 @@ import java.nio.charset.StandardCharsets;
 
 public class EasyOCRVision {
 
-    public void init(String pathToFile) {
+    public String recognizeText(String pathToFile) {
 
         String s = null;
+        StringBuilder result = new StringBuilder();
         try {
             Process p = Runtime.getRuntime().exec("python pyScripts\\main.py \"" + pathToFile + "\"");
 
@@ -19,16 +20,17 @@ public class EasyOCRVision {
                     InputStreamReader(p.getErrorStream()));
 
             while ((s = stdInput.readLine()) != null) {
-                System.out.println(s);
+                result.append(s);
             }
 
-            while ((s = stdError.readLine()) != null) {
-                System.out.println(s);
-            }
+//            while ((s = stdError.readLine()) != null) {
+//                System.out.println(s);
+//            }
 
 
         } catch ( Exception ex ) {
 
         }
+        return result.toString();
     }
 }

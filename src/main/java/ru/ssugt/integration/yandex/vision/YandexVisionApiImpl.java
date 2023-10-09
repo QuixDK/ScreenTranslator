@@ -23,11 +23,11 @@ public class YandexVisionApiImpl implements YandexVisionApi {
         this.apiConfig = apiConfig;
     }
 
-    public StringBuilder recognizeText(String mimeType, List<String> languagesCodes, String model, byte[] content) {
+    public String recognizeText(String mimeType, List<String> languagesCodes, String model, byte[] content) {
         return callYandexVisionApi(mimeType, languagesCodes, model, content);
     }
 
-    private StringBuilder callYandexVisionApi(String mimeType, List<String> languagesCodes, String model, byte[] content) {
+    private String callYandexVisionApi(String mimeType, List<String> languagesCodes, String model, byte[] content) {
         try {
             HttpPost postRequest = createPostRequest(mimeType, languagesCodes, model, content);
 
@@ -38,7 +38,10 @@ public class YandexVisionApiImpl implements YandexVisionApi {
             if ( response == null ) {
                 return null;
             }
-
+            while (response.getStatusLine().getStatusCode() == 503) {
+                response = httpClient.execute(postRequest);
+            }
+            //System.out.println(response.getStatusLine().getStatusCode());
             if ( response.getStatusLine().getStatusCode() != 503 && response.getStatusLine().getStatusCode() != 200 ) {
                 System.err.println("Failed to translate text. HTTP Status Code: " + response.getStatusLine().getStatusCode());
                 System.out.println("\n" + response.getStatusLine().getReasonPhrase());
@@ -75,11 +78,10 @@ public class YandexVisionApiImpl implements YandexVisionApi {
                         }
                     }
                 }
-                return stringBuilder;
+                return stringBuilder.toString();
 
             }
-            //Unmarshall
-            System.out.println(response.getStatusLine().getStatusCode());
+
 
         } catch ( IOException e ) {
             e.printStackTrace();

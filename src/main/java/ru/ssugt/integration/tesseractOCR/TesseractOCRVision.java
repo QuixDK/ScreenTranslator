@@ -7,8 +7,9 @@ import java.util.List;
 
 public class TesseractOCRVision {
 
-    public void init(String path, List<String> langs) {
+    public String recognizeText(String path, List<String> langs) {
         String s = null;
+        StringBuilder result =  new StringBuilder();
         try {
             StringBuilder languages = new StringBuilder();
             for ( int i = 0; i < langs.size(); i++ ) {
@@ -25,15 +26,18 @@ public class TesseractOCRVision {
             BufferedReader stdError = new BufferedReader(new
                     InputStreamReader(process.getErrorStream()));
 
-            while ((s = stdError.readLine()) != null) {
-                System.out.println(s);
+            while ((s = stdInput.readLine()) != null) {
+                result.append(s);
             }
 
-            while ((s = stdInput.readLine()) != null) {
-                System.out.println(s);
-            }
+//            while ((s = stdError.readLine()) != null) {
+//                System.out.println(s);
+//            }
+
+
         } catch ( Exception ex ) {
 
         }
+        return result.toString();
     }
 }
