@@ -1,4 +1,5 @@
-import ru.ssugt.TranslatedTextForm;
+package ru.ssugt.forms;
+
 import ru.ssugt.capture.BroadcastScreen;
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
@@ -27,7 +28,7 @@ public class MainForm implements Runnable {
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     private final Log log;
     private BroadcastScreen broadcastScreen;
-    JFrame mainFrame = new JFrame();
+    public JFrame mainFrame = new JFrame();
     private Thread threadForBroadcast;
     private TranslatedTextForm textForm;
 

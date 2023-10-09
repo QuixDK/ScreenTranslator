@@ -1,5 +1,7 @@
 package ru.ssugt.capture;
 
+import ru.ssugt.integration.easyOCR.EasyOCRVision;
+import ru.ssugt.integration.tesseractOCR.TesseractOCRVision;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ public class BroadcastScreen  {
     private final double width;
     private final double height;
     private final YandexVisionApi yandexVisionApi;
+
     private byte[] prevPicture;
     private StringBuilder text;
 
@@ -30,7 +33,9 @@ public class BroadcastScreen  {
         if ( pictureInBase64 != prevPicture ) {
             List<String> languageCodes = new ArrayList<>();
             languageCodes.add("*");
-            text = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
+
+                text = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
+
             if (text != null) {
                 text = new StringBuilder(text.toString());
                 return text.toString();

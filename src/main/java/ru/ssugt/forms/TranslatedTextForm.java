@@ -1,4 +1,4 @@
-package ru.ssugt;
+package ru.ssugt.forms;
 
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
