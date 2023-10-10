@@ -1,8 +1,8 @@
 package ru.ssugt.forms;
 
+import lombok.Getter;
+import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.i18n.SupportedLanguages;
-import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
-import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 import ru.ssugt.listeners.action.StartBroadcastingListener;
 import ru.ssugt.listeners.action.StopBroadcastingListener;
 import ru.ssugt.logger.Log;
@@ -19,12 +19,13 @@ import java.util.List;
 
 public class MainForm implements Runnable {
     private JPanel MainPanel;
-    private JTextArea fieldForTranslatedText;
-    private JTextArea fieldForTextToTranslate;
+    @Getter
     private JComboBox<SupportedLanguages> chooseSourceLanguageComboBox;
     private JLabel sourceLanguage;
     private JLabel targetLanguage;
+    @Getter
     private JComboBox<SupportedLanguages> chooseTargetLanguageComboBox;
+
     private JButton translateAreaButton;
     private JButton stopTranslating;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
@@ -35,32 +36,25 @@ public class MainForm implements Runnable {
     private ThreadForTesseractOCR threadForTesseractOCR;
     private RecognizedTextHandler recognizedTextHandler;
     private final List<Thread> threadList = new ArrayList<>();
-    private TranslatedTextForm textForm;
-    private YandexTranslateApi yandexTranslateApi;
-    private YandexVisionApi yandexVisionApi;
 
-    public MainForm(Log log, YandexTranslateApi yandexTranslateApi, YandexVisionApi yandexVisionApi) {
+    public MainForm(Log log) {
         this.log = log;
-        this.yandexVisionApi = yandexVisionApi;
-        this.yandexTranslateApi = yandexTranslateApi;
     }
 
     public void run() {
+        YandexConfigProperties yandexConfigProperties = new YandexConfigProperties();
+        yandexConfigProperties.initYandexConfigs();
         threadList.add(threadForYandexOCR);
         threadList.add(threadForEasyOCR);
         threadList.add(threadForTesseractOCR);
         threadList.add(recognizedTextHandler);
         stopTranslating.addActionListener(new StopBroadcastingListener(threadList));
-        translateAreaButton.addActionListener(new StartBroadcastingListener(threadList, yandexVisionApi));
+        translateAreaButton.addActionListener(new StartBroadcastingListener(threadList, yandexConfigProperties, this));
 
         log.GetLogger().info("Logger has been success created");
         setFrameSize(mainFrame);
         initializeTexts(mainFrame);
         initializeSupportedLanguages();
-        fieldForTranslatedText.setLineWrap(true);
-        fieldForTranslatedText.setWrapStyleWord(true);
-        fieldForTextToTranslate.setLineWrap(true);
-        fieldForTextToTranslate.setWrapStyleWord(true);
         sourceLanguage.setVisible(true);
         targetLanguage.setVisible(true);
         mainFrame.add(MainPanel);
@@ -68,8 +62,6 @@ public class MainForm implements Runnable {
         //mainFrame.setAlwaysOnTop(true);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        textForm = new TranslatedTextForm();
-        SwingUtilities.invokeLater(textForm);
     }
 
     private void initializeSupportedLanguages() {
@@ -86,14 +78,12 @@ public class MainForm implements Runnable {
         f.setTitle("Screen Translator");
         sourceLanguage.setText("Source language");
         targetLanguage.setText("Target language");
-        fieldForTextToTranslate.setToolTipText("Write text for translate");
-        fieldForTranslatedText.setToolTipText("Translated text");
     }
 
     private void setFrameSize(Frame f) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int widthPercentage = 30;
-        int heightPercentage = 30;
+        int heightPercentage = 15;
         int frameWidth = (screenSize.width * widthPercentage) / 100;
         int frameHeight = (screenSize.height * heightPercentage) / 100;
         f.setSize(frameWidth, frameHeight);

@@ -1,10 +1,8 @@
 package ru.ssugt.threads.OCR;
 
 import lombok.Getter;
-import ru.ssugt.DoneSignal;
+import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.integration.easyOCR.EasyOCRVision;
-
-import java.util.concurrent.CountDownLatch;
 
 public class ThreadForEasyOCR extends Thread implements Runnable {
 
@@ -14,9 +12,12 @@ public class ThreadForEasyOCR extends Thread implements Runnable {
     @Getter
     private String recognizedText;
 
-    public ThreadForEasyOCR(EasyOCRVision easyOCRVision, DoneSignal doneSignal) {
+    private final String sourceLang;
+
+    public ThreadForEasyOCR(EasyOCRVision easyOCRVision, DoneSignal doneSignal, String sourceLang) {
         this.easyOCRVision = easyOCRVision;
         this.doneSignal = doneSignal;
+        this.sourceLang = sourceLang;
 
     }
 
@@ -24,7 +25,7 @@ public class ThreadForEasyOCR extends Thread implements Runnable {
     public void run() {
         while (true) {
 
-            recognizedText = easyOCRVision.recognizeText("D:\\Java Projects\\ScreenTranslator\\testscreen.jpg");
+            recognizedText = easyOCRVision.recognizeText("D:\\Java Projects\\ScreenTranslator\\testscreen.jpg", sourceLang);
 
             if ( recognizedText != null && !recognizedText.equals("") ) {
                 // textForm.setTranslatedText(recognizedText, yandexTranslateApi, chooseSourceLanguageComboBox, chooseTargetLanguageComboBox);

@@ -23,15 +23,10 @@ public class TranslatedTextForm implements Runnable {
         jFrame.setVisible(true);
     }
 
-    public void setTranslatedText(String text, YandexTranslateApi yandexTranslateApi, JComboBox<SupportedLanguages> chooseSourceLanguageComboBox, JComboBox<SupportedLanguages> chooseTargetLanguageComboBox) {
-        if (text == null) {
-            return;
-        }
-        String sourceLang = ((SupportedLanguages) Objects.requireNonNull(chooseSourceLanguageComboBox.getSelectedItem())).code;
-        String targetLang = ((SupportedLanguages) Objects.requireNonNull(chooseTargetLanguageComboBox.getSelectedItem())).code;
-        String translatedText = yandexTranslateApi.getTranslatedText(text, sourceLang, targetLang);
-        if ( translatedText != null ) {
-            areaForTranslatedText.setText(translatedText);
+    public void setTranslatedText(String text) {
+        if (text != null) {
+            areaForTranslatedText.setText(text);
         }
     }
+
 }

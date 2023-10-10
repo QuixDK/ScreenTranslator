@@ -1,4 +1,4 @@
-package ru.ssugt;
+package ru.ssugt.threads;
 
 import java.util.concurrent.CountDownLatch;
 

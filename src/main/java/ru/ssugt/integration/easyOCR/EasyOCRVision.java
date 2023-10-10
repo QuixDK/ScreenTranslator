@@ -6,12 +6,12 @@ import java.nio.charset.StandardCharsets;
 
 public class EasyOCRVision {
 
-    public String recognizeText(String pathToFile) {
+    public String recognizeText(String pathToFile, String sourceLang) {
 
         String s = null;
         StringBuilder result = new StringBuilder();
         try {
-            Process p = Runtime.getRuntime().exec("python pyScripts\\main.py \"" + pathToFile + "\"");
+            Process p = Runtime.getRuntime().exec("python pyScripts\\easyOCR.py \"" + pathToFile + "\" + \"" + sourceLang + "\"");
 
             BufferedReader stdInput = new BufferedReader(new
                     InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));

@@ -1,13 +1,12 @@
 package ru.ssugt.threads.OCR;
 
 import lombok.Getter;
-import ru.ssugt.DoneSignal;
+import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.capture.BroadcastScreen;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 public class ThreadForYandexOCR extends Thread implements Runnable{
 
@@ -28,9 +27,7 @@ public class ThreadForYandexOCR extends Thread implements Runnable{
         List<String> languageCodes = new ArrayList<>();
         languageCodes.add("*");
         while (true) {
-
             byte[] pictureInBase64 = broadcastScreen.getFrame();
-
             boolean flag = true;
             if ( prevPicture != null ) {
                 if ( prevPicture.length == pictureInBase64.length ) {

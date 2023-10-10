@@ -1,5 +1,6 @@
 package ru.ssugt.config;
 
+import lombok.Getter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApiConfig;
@@ -12,10 +13,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class ConfigProperties {
+@Getter
+public class YandexConfigProperties {
 
+    private YandexVisionApi yandexVisionApi;
 
-    public YandexTranslateApi initYandexTranslate() {
+    private YandexTranslateApi yandexTranslateApi;
+
+    public void initYandexConfigs() {
+        yandexVisionApi = initYandexVision();
+        yandexTranslateApi = initYandexTranslate();
+    }
+    private YandexTranslateApi initYandexTranslate() {
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
             Path currRelativePath = Paths.get("");
@@ -30,7 +39,7 @@ public class ConfigProperties {
         }
     }
 
-    public YandexVisionApi initYandexVision() {
+    private YandexVisionApi initYandexVision() {
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
             Path currRelativePath = Paths.get("");

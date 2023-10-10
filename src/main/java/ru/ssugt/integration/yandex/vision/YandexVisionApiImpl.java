@@ -6,9 +6,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
@@ -31,23 +34,24 @@ public class YandexVisionApiImpl implements YandexVisionApi {
         try {
             HttpPost postRequest = createPostRequest(mimeType, languagesCodes, model, content);
 
-            HttpClient httpClient = HttpClients.createDefault();
+            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(3000).build();
+            HttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 
             HttpResponse response = httpClient.execute(postRequest);
 
             if ( response == null ) {
                 return null;
             }
-//            while (true) {
-//                if (response.getStatusLine().getStatusCode() == 503) {
-//                    response = httpClient.execute(postRequest);
-//                }
-//                else {
-//                    break;
-//                }
-//                System.out.println(response.getStatusLine().getStatusCode());
-//            }
-            System.out.println(response.getStatusLine().getStatusCode());
+
+            while (true) {
+                if ( response.getStatusLine().getStatusCode() == 503 ) {
+                    response = httpClient.execute(postRequest);
+                } else {
+                    break;
+                }
+                //System.out.println(response.getStatusLine().getStatusCode());
+            }
+            //System.out.println(response.getStatusLine().getStatusCode());
             if ( response.getStatusLine().getStatusCode() != 503 && response.getStatusLine().getStatusCode() != 200 ) {
                 System.err.println("Failed to translate text. HTTP Status Code: " + response.getStatusLine().getStatusCode());
                 System.out.println("\n" + response.getStatusLine().getReasonPhrase());
@@ -89,7 +93,11 @@ public class YandexVisionApiImpl implements YandexVisionApi {
             }
 
 
-        } catch ( Exception e ) {
+        }
+        catch ( ConnectTimeoutException exception ) {
+            callYandexVisionApi(mimeType, languagesCodes, model, content);
+        }
+        catch ( Exception e ) {
             e.printStackTrace();
         }
 

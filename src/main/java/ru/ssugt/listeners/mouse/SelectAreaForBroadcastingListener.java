@@ -1,10 +1,12 @@
 package ru.ssugt.listeners.mouse;
 
-import ru.ssugt.DoneSignal;
+import ru.ssugt.config.YandexConfigProperties;
+import ru.ssugt.forms.MainForm;
+import ru.ssugt.i18n.SupportedLanguages;
+import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.capture.BroadcastScreen;
 import ru.ssugt.integration.easyOCR.EasyOCRVision;
 import ru.ssugt.integration.tesseractOCR.TesseractOCRVision;
-import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 import ru.ssugt.threads.OCR.ThreadForEasyOCR;
 import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
 import ru.ssugt.threads.OCR.ThreadForYandexOCR;
@@ -15,26 +17,27 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.Objects;
 
 public class SelectAreaForBroadcastingListener implements MouseListener {
 
     double x = 0;
     double y = 0;
-
     private BroadcastScreen broadcastScreen;
     private List<Thread> threadList;
     private final JFrame areaForTranslation;
     private final EasyOCRVision easyOCRVision = new EasyOCRVision();
     private final TesseractOCRVision tesseractOCRVision = new TesseractOCRVision();
-    private final YandexVisionApi yandexVisionApi;
+    private final YandexConfigProperties yandexConfigProperties;
+    private final MainForm mainForm;
 
 
 
-    public SelectAreaForBroadcastingListener(List<Thread> threadList, JFrame areaForTranslation, YandexVisionApi yandexVisionApi) {
+    public SelectAreaForBroadcastingListener(List<Thread> threadList, JFrame areaForTranslation, YandexConfigProperties yandexConfigProperties, MainForm mainForm) {
         this.threadList = threadList;
         this.areaForTranslation = areaForTranslation;
-        this.yandexVisionApi = yandexVisionApi;
+        this.yandexConfigProperties = yandexConfigProperties;
+        this.mainForm = mainForm;
     }
 
     @Override
@@ -68,13 +71,15 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
             height = y - y2;
             y = y2;
         }
+        String sourceLang = ((SupportedLanguages) Objects.requireNonNull(mainForm.getChooseSourceLanguageComboBox().getSelectedItem())).code;
+        String targetLang = ((SupportedLanguages) Objects.requireNonNull(mainForm.getChooseTargetLanguageComboBox().getSelectedItem())).code;
         System.out.println("Мышка отпущена " + x + " " + y + " " + width + " " + height);
         broadcastScreen = new BroadcastScreen(x, y, width, height);
         DoneSignal doneSignal = new DoneSignal();
-        threadList.set(0, new ThreadForYandexOCR(broadcastScreen, yandexVisionApi, doneSignal));
-        threadList.set(1, new ThreadForEasyOCR(easyOCRVision, doneSignal));
+        threadList.set(0, new ThreadForYandexOCR(broadcastScreen, yandexConfigProperties.getYandexVisionApi(), doneSignal));
+        threadList.set(1, new ThreadForEasyOCR(easyOCRVision, doneSignal, sourceLang));
         threadList.set(2, new ThreadForTesseractOCR(tesseractOCRVision, doneSignal));
-        threadList.set(3, new RecognizedTextHandler(doneSignal, (ThreadForTesseractOCR) threadList.get(2), (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0)));
+        threadList.set(3, new RecognizedTextHandler(doneSignal, (ThreadForTesseractOCR) threadList.get(2), (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0), yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang));
         for ( Thread t: threadList ) {
             t.start();
         }

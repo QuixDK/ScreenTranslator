@@ -1,13 +1,11 @@
 package ru.ssugt.threads.OCR;
 
 import lombok.Getter;
-import ru.ssugt.DoneSignal;
-import ru.ssugt.integration.easyOCR.EasyOCRVision;
+import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.integration.tesseractOCR.TesseractOCRVision;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 public class ThreadForTesseractOCR extends Thread implements Runnable {
 
@@ -32,7 +30,7 @@ public class ThreadForTesseractOCR extends Thread implements Runnable {
             if ( recognizedText != null && !recognizedText.equals("") ) {
                 // textForm.setTranslatedText(recognizedText, yandexTranslateApi, chooseSourceLanguageComboBox, chooseTargetLanguageComboBox);
             }
-            System.out.println("TesseractOCR recognized text\n");
+            System.out.println("TesseractOCR recognized text");
 
             try {
                 doneSignal.getDoneSignal().countDown();

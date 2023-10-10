@@ -1,6 +1,7 @@
 package ru.ssugt.listeners.action;
 
-import ru.ssugt.integration.yandex.vision.YandexVisionApi;
+import ru.ssugt.config.YandexConfigProperties;
+import ru.ssugt.forms.MainForm;
 import ru.ssugt.listeners.mouse.SelectAreaForBroadcastingListener;
 
 import javax.swing.*;
@@ -12,12 +13,14 @@ import java.util.List;
 public class StartBroadcastingListener implements ActionListener {
 
     private final List<Thread> threadList;
-    private final YandexVisionApi yandexVisionApi;
+    private final YandexConfigProperties yandexConfigProperties;
+    private final MainForm mainForm;
 
-    public StartBroadcastingListener(List<Thread> threadList, YandexVisionApi yandexVisionApi) {
+    public StartBroadcastingListener(List<Thread> threadList, YandexConfigProperties yandexConfigProperties, MainForm mainForm) {
         this.threadList = threadList;
+        this.yandexConfigProperties = yandexConfigProperties;
+        this.mainForm = mainForm;
 
-        this.yandexVisionApi = yandexVisionApi;
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -28,6 +31,6 @@ public class StartBroadcastingListener implements ActionListener {
         areaForTranslation.setUndecorated(true);
         areaForTranslation.setOpacity(0.5f);
         areaForTranslation.setVisible(true);
-        areaForTranslation.addMouseListener(new SelectAreaForBroadcastingListener(threadList, areaForTranslation, yandexVisionApi));
+        areaForTranslation.addMouseListener(new SelectAreaForBroadcastingListener(threadList, areaForTranslation, yandexConfigProperties, mainForm));
     }
 }
