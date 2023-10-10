@@ -38,10 +38,16 @@ public class YandexVisionApiImpl implements YandexVisionApi {
             if ( response == null ) {
                 return null;
             }
-            while (response.getStatusLine().getStatusCode() == 503) {
-                response = httpClient.execute(postRequest);
-            }
-            //System.out.println(response.getStatusLine().getStatusCode());
+//            while (true) {
+//                if (response.getStatusLine().getStatusCode() == 503) {
+//                    response = httpClient.execute(postRequest);
+//                }
+//                else {
+//                    break;
+//                }
+//                System.out.println(response.getStatusLine().getStatusCode());
+//            }
+            System.out.println(response.getStatusLine().getStatusCode());
             if ( response.getStatusLine().getStatusCode() != 503 && response.getStatusLine().getStatusCode() != 200 ) {
                 System.err.println("Failed to translate text. HTTP Status Code: " + response.getStatusLine().getStatusCode());
                 System.out.println("\n" + response.getStatusLine().getReasonPhrase());
@@ -83,7 +89,7 @@ public class YandexVisionApiImpl implements YandexVisionApi {
             }
 
 
-        } catch ( IOException e ) {
+        } catch ( Exception e ) {
             e.printStackTrace();
         }
 

@@ -18,7 +18,6 @@ public class TranslatedTextForm implements Runnable {
         //jFrame.setOpacity(0.5f);
         areaForTranslatedText.setWrapStyleWord(true);
         areaForTranslatedText.setLineWrap(true);
-
         jFrame.setAlwaysOnTop(true);
         jFrame.setSize(300, 300);
         jFrame.setVisible(true);

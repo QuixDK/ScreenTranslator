@@ -1,5 +1,7 @@
-package ru.ssugt.threads;
+package ru.ssugt.threads.OCR;
 
+import lombok.Getter;
+import ru.ssugt.DoneSignal;
 import ru.ssugt.capture.BroadcastScreen;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 
@@ -11,8 +13,11 @@ public class ThreadForYandexOCR extends Thread implements Runnable{
 
     private final BroadcastScreen broadcastScreen;
     private final YandexVisionApi yandexVisionApi;
-    private final CountDownLatch doneSignal;
-    public ThreadForYandexOCR(BroadcastScreen broadcastScreen, YandexVisionApi yandexVisionApi, CountDownLatch doneSignal) {
+    private DoneSignal doneSignal;
+
+    @Getter
+    private String recognizedText;
+    public ThreadForYandexOCR(BroadcastScreen broadcastScreen, YandexVisionApi yandexVisionApi, DoneSignal doneSignal) {
         this.yandexVisionApi = yandexVisionApi;
         this.broadcastScreen = broadcastScreen;
         this.doneSignal = doneSignal;
@@ -22,7 +27,6 @@ public class ThreadForYandexOCR extends Thread implements Runnable{
         byte[] prevPicture = null;
         List<String> languageCodes = new ArrayList<>();
         languageCodes.add("*");
-        String recognizedText = "";
         while (true) {
 
             byte[] pictureInBase64 = broadcastScreen.getFrame();
@@ -49,8 +53,8 @@ public class ThreadForYandexOCR extends Thread implements Runnable{
             }
             System.out.println("YandexOCR recognized text");
             try {
-                doneSignal.countDown();
-                doneSignal.await();
+                doneSignal.getDoneSignal().countDown();
+                doneSignal.getDoneSignal().await();
                 Thread.sleep(3000);
             } catch ( InterruptedException e ) {
                 break;
