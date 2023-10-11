@@ -1,8 +1,6 @@
 package ru.ssugt.threads;
 
-import ru.ssugt.forms.MainForm;
 import ru.ssugt.forms.TranslatedTextForm;
-import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.integration.ScriptHandler;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.threads.OCR.ThreadForEasyOCR;
@@ -10,10 +8,6 @@ import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
 import ru.ssugt.threads.OCR.ThreadForYandexOCR;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 public class RecognizedTextHandler extends Thread implements Runnable {
@@ -52,10 +46,10 @@ public class RecognizedTextHandler extends Thread implements Runnable {
                 String easyRecognizedText = threadForEasyOCR.getRecognizedText();
                 String yandexRecognizedText = threadForYandexOCR.getRecognizedText();
 
-                String command = "python pyScripts\\selectBestText.py \"Выбери лучший по смыслу текст из приведенных и напиши его в ответе без цифры:\" \"" + tesseractRecognizedText + "\" \""
-                        + easyRecognizedText + "\" \"" + yandexRecognizedText + "\"";
-
-                String translatedText = yandexTranslateApi.getTranslatedText(scriptHandler.executeScript(command), sourceLang, targetLang);
+//                String command = "python pyScripts\\selectBestText.py \"Выбери лучший по смыслу текст из приведенных и напиши его в ответе без цифры:\" \"" + tesseractRecognizedText + "\" \""
+//                        + easyRecognizedText + "\" \"" + yandexRecognizedText + "\"";
+///scriptHandler.executeScript(command)
+                String translatedText = yandexTranslateApi.getTranslatedText(tesseractRecognizedText, sourceLang, targetLang);
                 textForm.setTranslatedText(translatedText);
 
                 System.out.println("ChatGPT choosed the best text");

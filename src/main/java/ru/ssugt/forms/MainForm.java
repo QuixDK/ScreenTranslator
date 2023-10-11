@@ -5,6 +5,7 @@ import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.listeners.action.StartBroadcastingListener;
 import ru.ssugt.listeners.action.StopBroadcastingListener;
+import ru.ssugt.listeners.action.VoiceRecognizeListener;
 import ru.ssugt.logger.Log;
 import ru.ssugt.threads.OCR.ThreadForEasyOCR;
 import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
@@ -25,9 +26,9 @@ public class MainForm implements Runnable {
     private JLabel targetLanguage;
     @Getter
     private JComboBox<SupportedLanguages> chooseTargetLanguageComboBox;
-
     private JButton translateAreaButton;
     private JButton stopTranslating;
+    private JButton startVoiceRecognizeButton;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     private final Log log;
     public JFrame mainFrame = new JFrame();
@@ -48,6 +49,7 @@ public class MainForm implements Runnable {
         threadList.add(threadForEasyOCR);
         threadList.add(threadForTesseractOCR);
         threadList.add(recognizedTextHandler);
+        startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener());
         stopTranslating.addActionListener(new StopBroadcastingListener(threadList));
         translateAreaButton.addActionListener(new StartBroadcastingListener(threadList, yandexConfigProperties, this));
 
@@ -83,7 +85,7 @@ public class MainForm implements Runnable {
     private void setFrameSize(Frame f) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int widthPercentage = 30;
-        int heightPercentage = 15;
+        int heightPercentage = 20;
         int frameWidth = (screenSize.width * widthPercentage) / 100;
         int frameHeight = (screenSize.height * heightPercentage) / 100;
         f.setSize(frameWidth, frameHeight);
