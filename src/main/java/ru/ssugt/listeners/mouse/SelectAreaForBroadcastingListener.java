@@ -4,7 +4,7 @@ import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.forms.MainForm;
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.threads.DoneSignal;
-import ru.ssugt.capture.BroadcastScreen;
+import ru.ssugt.capture.SetRectangle;
 import ru.ssugt.integration.easyOCR.EasyOCRVision;
 import ru.ssugt.integration.tesseractOCR.TesseractOCRVision;
 import ru.ssugt.threads.OCR.ThreadForEasyOCR;
@@ -23,7 +23,7 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
 
     double x = 0;
     double y = 0;
-    private BroadcastScreen broadcastScreen;
+    private SetRectangle setRectangle;
     private List<Thread> threadList;
     private final JFrame areaForTranslation;
     private final EasyOCRVision easyOCRVision = new EasyOCRVision();
@@ -74,9 +74,10 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
         String sourceLang = ((SupportedLanguages) Objects.requireNonNull(mainForm.getChooseSourceLanguageComboBox().getSelectedItem())).code;
         String targetLang = ((SupportedLanguages) Objects.requireNonNull(mainForm.getChooseTargetLanguageComboBox().getSelectedItem())).code;
         System.out.println("Мышка отпущена " + x + " " + y + " " + width + " " + height);
-        broadcastScreen = new BroadcastScreen(x, y, width, height);
+        setRectangle = new SetRectangle(x, y, width, height);
         DoneSignal doneSignal = new DoneSignal();
-        threadList.set(0, new ThreadForYandexOCR(broadcastScreen, yandexConfigProperties.getYandexVisionApi(), doneSignal));
+
+        threadList.set(0, new ThreadForYandexOCR(setRectangle, yandexConfigProperties.getYandexVisionApi(), doneSignal));
         threadList.set(1, new ThreadForEasyOCR(easyOCRVision, doneSignal, sourceLang));
         threadList.set(2, new ThreadForTesseractOCR(tesseractOCRVision, doneSignal));
         threadList.set(3, new RecognizedTextHandler(doneSignal, (ThreadForTesseractOCR) threadList.get(2), (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0), yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang));
@@ -85,6 +86,7 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
         }
 
     }
+
 
     @Override
     public void mouseEntered(MouseEvent e) {

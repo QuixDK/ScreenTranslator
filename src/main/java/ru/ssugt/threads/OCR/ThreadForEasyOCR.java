@@ -18,23 +18,17 @@ public class ThreadForEasyOCR extends Thread implements Runnable {
         this.easyOCRVision = easyOCRVision;
         this.doneSignal = doneSignal;
         this.sourceLang = sourceLang;
-
     }
 
     @Override
     public void run() {
         while (true) {
-
             recognizedText = easyOCRVision.recognizeText("D:\\Java Projects\\ScreenTranslator\\testscreen.jpg", sourceLang);
-
-            if ( recognizedText != null && !recognizedText.equals("") ) {
-                // textForm.setTranslatedText(recognizedText, yandexTranslateApi, chooseSourceLanguageComboBox, chooseTargetLanguageComboBox);
-            }
             System.out.println("EasyOCR recognized text");
             try {
                 doneSignal.getDoneSignal().countDown();
                 doneSignal.getDoneSignal().await();
-                Thread.sleep(100);
+                Thread.sleep(1);
             } catch ( InterruptedException e ) {
                 break;
             }

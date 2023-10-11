@@ -34,7 +34,7 @@ public class YandexVisionApiImpl implements YandexVisionApi {
         try {
             HttpPost postRequest = createPostRequest(mimeType, languagesCodes, model, content);
 
-            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(3000).build();
+            RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(3000).build();
             HttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 
             HttpResponse response = httpClient.execute(postRequest);

@@ -3,6 +3,7 @@ package ru.ssugt.threads;
 import ru.ssugt.forms.MainForm;
 import ru.ssugt.forms.TranslatedTextForm;
 import ru.ssugt.i18n.SupportedLanguages;
+import ru.ssugt.integration.ScriptHandler;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.threads.OCR.ThreadForEasyOCR;
 import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
@@ -40,51 +41,32 @@ public class RecognizedTextHandler extends Thread implements Runnable {
     public void run() {
         textForm = new TranslatedTextForm();
         SwingUtilities.invokeLater(textForm);
+        ScriptHandler scriptHandler = new ScriptHandler();
         while (true) {
-            if ( doneSignal.getDoneSignal().getCount() == 1 ) {
+            try {
+                if ( doneSignal.getDoneSignal().getCount() != 1 ) {
+                    continue;
+                }
+
                 String tesseractRecognizedText = threadForTesseractOCR.getRecognizedText();
                 String easyRecognizedText = threadForEasyOCR.getRecognizedText();
                 String yandexRecognizedText = threadForYandexOCR.getRecognizedText();
 
+                String command = "python pyScripts\\selectBestText.py \"Выбери лучший по смыслу текст из приведенных и напиши его в ответе без цифры:\" \"" + tesseractRecognizedText + "\" \""
+                        + easyRecognizedText + "\" \"" + yandexRecognizedText + "\"";
 
-                String s = null;
+                String translatedText = yandexTranslateApi.getTranslatedText(scriptHandler.executeScript(command), sourceLang, targetLang);
+                textForm.setTranslatedText(translatedText);
 
-                StringBuilder result = new StringBuilder();
-                try {
-                    System.out.println(tesseractRecognizedText);
-                    System.out.println(easyRecognizedText);
-                    System.out.println(yandexRecognizedText);
-
-                    Process p = Runtime.getRuntime().exec("python pyScripts\\selectBestText.py \"Выбери лучший по смыслу текст из приведенных и напиши его в ответе:\" \"" + tesseractRecognizedText + "\" \""
-                            + easyRecognizedText + "\" \"" + yandexRecognizedText + "\"");
-
-                    BufferedReader stdInput = new BufferedReader(new
-                            InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
-
-                    BufferedReader stdError = new BufferedReader(new
-                            InputStreamReader(p.getErrorStream()));
-
-                    while ((s = stdInput.readLine()) != null) {
-                        result.append(s);
-                    }
-                    String translatedText = yandexTranslateApi.getTranslatedText(result.toString(), sourceLang, targetLang);
-                    textForm.setTranslatedText(translatedText);
-                    while ((s = stdError.readLine()) != null) {
-                        System.out.println(s);
-                    }
-                    System.out.println("ChatGPT choosed the best text");
-                } catch ( Exception ex ) {
-                }
-                try {
-                    doneSignal.getDoneSignal().countDown();
-                    doneSignal.setDoneSignal(new CountDownLatch(4));
-                    Thread.sleep(1);
-                } catch ( InterruptedException ex ) {
-                    break;
-                }
+                System.out.println("ChatGPT choosed the best text");
+                doneSignal.getDoneSignal().countDown();
+                doneSignal.setDoneSignal(new CountDownLatch(4));
+                Thread.sleep(1);
+            }
+            catch ( InterruptedException ex ) {
+                break;
             }
 
         }
-
     }
 }

@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThreadForTesseractOCR extends Thread implements Runnable {
-
     private final TesseractOCRVision tesseractOCRVision;
-    private DoneSignal doneSignal;
+    private final DoneSignal doneSignal;
 
     @Getter
     private String recognizedText;
@@ -21,21 +20,15 @@ public class ThreadForTesseractOCR extends Thread implements Runnable {
     @Override
     public void run() {
         while (true) {
-
             List<String> languageCodes = new ArrayList<>();
             languageCodes.add("rus");
             languageCodes.add("eng");
             recognizedText = tesseractOCRVision.recognizeText("D:\\Java Projects\\ScreenTranslator\\testscreen.jpg", languageCodes);
-
-            if ( recognizedText != null && !recognizedText.equals("") ) {
-                // textForm.setTranslatedText(recognizedText, yandexTranslateApi, chooseSourceLanguageComboBox, chooseTargetLanguageComboBox);
-            }
             System.out.println("TesseractOCR recognized text");
-
             try {
                 doneSignal.getDoneSignal().countDown();
                 doneSignal.getDoneSignal().await();
-                Thread.sleep(2000);
+                Thread.sleep(1);
             } catch ( InterruptedException e ) {
                 break;
             }

@@ -9,11 +9,13 @@ public class StopBroadcastingListener implements ActionListener {
     private final List<Thread> threadList;
 
     public StopBroadcastingListener(List<Thread> threadList) {
-
         this.threadList = threadList;
     }
     @Override
     public void actionPerformed(ActionEvent e) {
+        if ( threadList.isEmpty() ) {
+            return;
+        }
         for ( Thread t: threadList ) {
             if (t.isAlive()) {
                 t.interrupt();
