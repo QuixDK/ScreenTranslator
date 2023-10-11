@@ -1,8 +1,10 @@
 import com.formdev.flatlaf.FlatDarkLaf;
+import ru.ssugt.forms.MainForm;
 import ru.ssugt.logger.Log;
 
 import javax.swing.*;
 import java.awt.*;
+
 
 public class Main {
 
@@ -19,5 +21,6 @@ public class Main {
             SwingUtilities.updateComponentTreeUI(window);
         }
         SwingUtilities.invokeLater(new MainForm(log));
+
     }
 }
