@@ -1,5 +1,6 @@
 import com.formdev.flatlaf.FlatDarkLaf;
 import ru.ssugt.forms.MainForm;
+import ru.ssugt.integration.ScriptHandler;
 import ru.ssugt.logger.Log;
 
 import javax.swing.*;

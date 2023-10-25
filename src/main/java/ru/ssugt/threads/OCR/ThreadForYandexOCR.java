@@ -37,6 +37,9 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
                 recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
                 System.out.println("YandexOCR recognized text");
             }
+            if (recognizedText == null) {
+                continue;
+            }
             prevPicture = pictureInBase64;
             try {
                 doneSignal.getDoneSignal().countDown();

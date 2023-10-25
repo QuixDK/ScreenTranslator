@@ -9,6 +9,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -34,7 +35,7 @@ public class YandexVisionApiImpl implements YandexVisionApi {
         try {
             HttpPost postRequest = createPostRequest(mimeType, languagesCodes, model, content);
 
-            RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(3000).build();
+            RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(1000).build();
             HttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 
             HttpResponse response = httpClient.execute(postRequest);
@@ -94,7 +95,7 @@ public class YandexVisionApiImpl implements YandexVisionApi {
 
 
         }
-        catch ( ConnectTimeoutException exception ) {
+        catch ( ConnectionPoolTimeoutException exception ) {
             callYandexVisionApi(mimeType, languagesCodes, model, content);
         }
         catch ( Exception e ) {

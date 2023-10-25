@@ -28,7 +28,7 @@ public class YandexConfigProperties {
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
             Path currRelativePath = Paths.get("");
-            config.load(currRelativePath + "main//resources//application.properties");
+            config.load(currRelativePath + "src/main/resources/application.properties");
             YandexTranslateApiConfig yandexTranslateApiConfig = new YandexTranslateApiConfig(
                     config.getString("apiKey"),
                     config.getString("translateHost"));
@@ -43,7 +43,7 @@ public class YandexConfigProperties {
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
             Path currRelativePath = Paths.get("");
-            config.load(currRelativePath + "main//resources//application.properties");
+            config.load(currRelativePath + "src/main/resources/application.properties");
             String command = "curl -d \"{\\\"yandexPassportOauthToken\\\":\\\"" + config.getString("OAuthToken") + "\\\"}\" \"https://iam.api.cloud.yandex.net/iam/v1/tokens\"\n";
             Process process = Runtime.getRuntime().exec(command);
             String IAMToken = "";

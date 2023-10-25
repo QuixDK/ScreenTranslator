@@ -45,14 +45,19 @@ public class RecognizedTextHandler extends Thread implements Runnable {
                 String tesseractRecognizedText = threadForTesseractOCR.getRecognizedText();
                 String easyRecognizedText = threadForEasyOCR.getRecognizedText();
                 String yandexRecognizedText = threadForYandexOCR.getRecognizedText();
+                System.out.println(yandexRecognizedText);
 
-//                String command = "python pyScripts\\selectBestText.py \"Выбери лучший по смыслу текст из приведенных и напиши его в ответе без цифры:\" \"" + tesseractRecognizedText + "\" \""
-//                        + easyRecognizedText + "\" \"" + yandexRecognizedText + "\"";
-///scriptHandler.executeScript(command)
-                String translatedText = yandexTranslateApi.getTranslatedText(tesseractRecognizedText, sourceLang, targetLang);
-                textForm.setTranslatedText(translatedText);
+                String command = "python pyScripts\\selectBestText.py \"Выбери лучший по смыслу текст из приведенных и напиши его в ответе без цифры:\" \"" + tesseractRecognizedText + "\" \""
+                        + easyRecognizedText + "\" \"" + yandexRecognizedText + "\"";
 
-                System.out.println("ChatGPT choosed the best text");
+                String result = yandexTranslateApi.getTranslatedText(scriptHandler.executeScript(command), sourceLang, targetLang);
+
+                if (!yandexRecognizedText.equals("")) {
+                    String translatedText = yandexTranslateApi.getTranslatedText(result, sourceLang, targetLang);
+                    textForm.setTranslatedText(translatedText);
+                }
+
+                System.out.println("ChatGPT chose the best text");
                 doneSignal.getDoneSignal().countDown();
                 doneSignal.setDoneSignal(new CountDownLatch(4));
                 Thread.sleep(1);

@@ -19,9 +19,11 @@ public class ScriptHandler {
             while ((s = stdInput.readLine()) != null) {
                 result.append(s);
             }
+
             while ((s = stdError.readLine()) != null) {
                 System.out.println(s);
             }
+
         }
         catch ( Exception ex ) {
 
