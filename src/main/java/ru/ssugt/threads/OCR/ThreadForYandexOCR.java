@@ -6,6 +6,8 @@ import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.capture.SetRectangle;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,8 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
         SetScreenCapture screenCapture = new SetScreenCapture();
         languageCodes.add("*");
         while (true) {
-            byte[] pictureInBase64 = screenCapture.getScreenshot(setRectangle, "testscreen.jpg");
+            Path currRelativePath = Paths.get("");
+            byte[] pictureInBase64 = screenCapture.getScreenshot(setRectangle, "src/main/resources/temp/testscreen.jpg");
             if ( isAnotherPicture(prevPicture, pictureInBase64) ) {
                 recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
                 System.out.println("YandexOCR recognized text");

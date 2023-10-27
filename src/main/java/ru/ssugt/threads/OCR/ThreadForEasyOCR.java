@@ -4,6 +4,9 @@ import lombok.Getter;
 import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.integration.easyOCR.EasyOCRVision;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class ThreadForEasyOCR extends Thread implements Runnable {
 
     private final EasyOCRVision easyOCRVision;
@@ -23,7 +26,8 @@ public class ThreadForEasyOCR extends Thread implements Runnable {
     @Override
     public void run() {
         while (true) {
-            recognizedText = easyOCRVision.recognizeText("D:\\Java Projects\\ScreenTranslator\\testscreen.jpg", sourceLang);
+            Path currRelativePath = Paths.get("");
+            recognizedText = easyOCRVision.recognizeText(currRelativePath + "src/main/resources/temp/testscreen.jpg", sourceLang);
             System.out.println("EasyOCR recognized text");
             try {
                 doneSignal.getDoneSignal().countDown();

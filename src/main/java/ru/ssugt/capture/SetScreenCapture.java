@@ -13,7 +13,7 @@ public class SetScreenCapture {
     public byte[] getScreenshot(SetRectangle rectangle, String path) {
         try {
             Robot r = new Robot();
-            Rectangle captureArea = new Rectangle((int) rectangle.x(), (int) rectangle.y(), (int) rectangle.width(), (int) rectangle.height());
+            Rectangle captureArea = new Rectangle(rectangle.x(), rectangle.y(), rectangle.width(), rectangle.height());
             BufferedImage Image = r.createScreenCapture(captureArea);
             File screenshot = new File(path);
             ImageIO.write(Image, "jpg", screenshot);

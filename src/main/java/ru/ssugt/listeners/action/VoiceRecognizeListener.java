@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class VoiceRecognizeListener implements ActionListener {
     @Override
@@ -22,9 +24,10 @@ public class VoiceRecognizeListener implements ActionListener {
 
             // Start capturing audio
             targetLine.start();
+            Path currRelativePath = Paths.get("");
 
             // Write captured audio data to a file
-            File outputFile = new File("path/to/your/output/file.wav");
+            File outputFile = new File(currRelativePath + "src/main/resources/temp/file.wav");
             AudioSystem.write(new AudioInputStream(targetLine), AudioFileFormat.Type.WAVE, outputFile);
 
             // Record audio for 5 seconds
