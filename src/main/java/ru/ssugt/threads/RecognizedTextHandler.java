@@ -1,5 +1,6 @@
 package ru.ssugt.threads;
 
+import ru.ssugt.capture.SetRectangle;
 import ru.ssugt.forms.TranslatedTextForm;
 import ru.ssugt.integration.ScriptHandler;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
@@ -18,10 +19,12 @@ public class RecognizedTextHandler extends Thread implements Runnable {
     private final YandexTranslateApi yandexTranslateApi;
     private final String sourceLang;
     private final String targetLang;
+    private final SetRectangle rectangle;
     private TranslatedTextForm textForm;
 
-    public RecognizedTextHandler(DoneSignal doneSignal, ThreadForTesseractOCR threadForTesseractOCR, ThreadForEasyOCR threadForEasyOCR, ThreadForYandexOCR threadForYandexOCR, YandexTranslateApi yandexTranslateApi,
+    public RecognizedTextHandler(SetRectangle rectangle, DoneSignal doneSignal, ThreadForTesseractOCR threadForTesseractOCR, ThreadForEasyOCR threadForEasyOCR, ThreadForYandexOCR threadForYandexOCR, YandexTranslateApi yandexTranslateApi,
                                  String sourceLang, String targetLang) {
+        this.rectangle = rectangle;
         this.doneSignal = doneSignal;
         this.threadForTesseractOCR = threadForTesseractOCR;
         this.threadForEasyOCR = threadForEasyOCR;
@@ -33,7 +36,7 @@ public class RecognizedTextHandler extends Thread implements Runnable {
 
     @Override
     public void run() {
-        textForm = new TranslatedTextForm();
+        textForm = new TranslatedTextForm(rectangle);
         SwingUtilities.invokeLater(textForm);
         ScriptHandler scriptHandler = new ScriptHandler();
         while (true) {
@@ -45,19 +48,19 @@ public class RecognizedTextHandler extends Thread implements Runnable {
                 String tesseractRecognizedText = threadForTesseractOCR.getRecognizedText();
                 String easyRecognizedText = threadForEasyOCR.getRecognizedText();
                 String yandexRecognizedText = threadForYandexOCR.getRecognizedText();
-                System.out.println(yandexRecognizedText);
+               /* System.out.println(yandexRecognizedText);
 
                 String command = "python pyScripts\\selectBestText.py \"Выбери лучший по смыслу текст из приведенных и напиши его в ответе без цифры:\" \"" + tesseractRecognizedText + "\" \""
                         + easyRecognizedText + "\" \"" + yandexRecognizedText + "\"";
-
-                String result = yandexTranslateApi.getTranslatedText(scriptHandler.executeScript(command), sourceLang, targetLang);
+                */
+                //String result = yandexTranslateApi.getTranslatedText(scriptHandler.executeScript(command), sourceLang, targetLang);
 
                 if (!yandexRecognizedText.equals("")) {
-                    String translatedText = yandexTranslateApi.getTranslatedText(result, sourceLang, targetLang);
+                    String translatedText = yandexTranslateApi.getTranslatedText(yandexRecognizedText, sourceLang, targetLang);
                     textForm.setTranslatedText(translatedText);
                 }
 
-                System.out.println("ChatGPT chose the best text");
+                //System.out.println("ChatGPT chose the best text");
                 doneSignal.getDoneSignal().countDown();
                 doneSignal.setDoneSignal(new CountDownLatch(4));
                 Thread.sleep(1);

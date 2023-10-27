@@ -65,8 +65,8 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
                 }
             }
         }
-        System.out.println(prevPicture.length);
-        System.out.println(pictureInBase64.length);
+        //System.out.println(prevPicture.length);
+        //System.out.println(pictureInBase64.length);
         return flag;
     }
 }

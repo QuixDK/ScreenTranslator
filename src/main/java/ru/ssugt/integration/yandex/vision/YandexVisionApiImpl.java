@@ -67,7 +67,7 @@ public class YandexVisionApiImpl implements YandexVisionApi {
                 JsonObject responseEntity = gson.fromJson(responseBody, JsonObject.class);
 
                 JsonObject result = responseEntity.get("result").getAsJsonObject();
-                JsonObject textAnnotation = result.get("text_annotation").getAsJsonObject();
+                JsonObject textAnnotation = result.get("textAnnotation").getAsJsonObject();
                 JsonArray blocks = textAnnotation.get("blocks").getAsJsonArray();
                 JsonArray lines;
                 JsonArray alternatives;
@@ -80,13 +80,14 @@ public class YandexVisionApiImpl implements YandexVisionApi {
                     for ( int j = 0; j < lines.size(); j++ ) {
                         JsonObject linesElement;
                         linesElement = lines.get(j).getAsJsonObject();
-                        alternatives = linesElement.get("alternatives").getAsJsonArray();
+                        alternatives = linesElement.get("words").getAsJsonArray();
                         for ( int k = 0; k < alternatives.size(); k++ ) {
                             alternativesElement = alternatives.get(k).getAsJsonObject();
                             String string = alternativesElement.getAsJsonObject().get("text").getAsString();
                             stringBuilder.append(string);
-                            stringBuilder.append("\n");
+
                         }
+                        stringBuilder.append("\n");
                     }
                 }
                 return stringBuilder.toString();
