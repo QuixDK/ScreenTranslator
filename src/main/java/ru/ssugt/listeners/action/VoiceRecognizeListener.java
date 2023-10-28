@@ -1,43 +1,46 @@
 package ru.ssugt.listeners.action;
 
 
-import javax.sound.sampled.*;
+import ru.ssugt.integration.yandex.stt.YandexSTT;
+import ru.ssugt.threads.voice.ThreadForVoiceRecord;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class VoiceRecognizeListener implements ActionListener {
+    private final List<Thread> threadList;
+    Path currRelativePath = Paths.get("");
+    ThreadForVoiceRecord recorder = null;
+    static final long RECORD_TIME = 10000;  // 1 minute
+    public VoiceRecognizeListener(List<Thread> threadList) {
+        this.threadList = threadList;
+    }
     @Override
     public void actionPerformed(ActionEvent e) {
-        try {
-            AudioFormat format = new AudioFormat(44100, 16, 2, true, true);
+        YandexSTT yandexSTT = new YandexSTT();
+        threadList.set(4, new ThreadForVoiceRecord());
 
-            // Get a target data line
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            TargetDataLine targetLine = (TargetDataLine) AudioSystem.getLine(info);
-
-            // Open the target data line
-            targetLine.open(format);
-
-            // Start capturing audio
-            targetLine.start();
-            Path currRelativePath = Paths.get("");
-
-            // Write captured audio data to a file
-            File outputFile = new File(currRelativePath + "src/main/resources/temp/file.wav");
-            AudioSystem.write(new AudioInputStream(targetLine), AudioFileFormat.Type.WAVE, outputFile);
-
-            // Record audio for 5 seconds
-            Thread.sleep(5000);
-
-            // Stop capturing audio and close resources
-            targetLine.stop();
-            targetLine.close();
-        } catch ( LineUnavailableException | IOException | InterruptedException ex ) {
-            ex.printStackTrace();
+        if (threadList.get(4) instanceof ThreadForVoiceRecord) {
+            recorder = (ThreadForVoiceRecord) threadList.get(4);
         }
+
+        Thread stopper = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(RECORD_TIME);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+
+                recorder.finish();
+            }
+        });
+        stopper.start();
+        // start recording
+        recorder.start();
     }
+
 }

@@ -35,7 +35,7 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
         languageCodes.add("*");
         while (true) {
             Path currRelativePath = Paths.get("");
-            byte[] pictureInBase64 = screenCapture.getScreenshot(setRectangle, "src/main/resources/temp/testscreen.jpg");
+            byte[] pictureInBase64 = screenCapture.getScreenshot(setRectangle, currRelativePath + "src/main/resources/temp/testscreen.jpg");
             if ( isAnotherPicture(prevPicture, pictureInBase64) ) {
                 recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
                 System.out.println("YandexOCR recognized text");

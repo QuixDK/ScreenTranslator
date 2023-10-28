@@ -62,6 +62,7 @@ public class YandexConfigProperties {
             StringBuffer stringBuffer = new StringBuffer(sb.toString());
             IAMToken = stringBuffer.substring(index.get(2) + 1, index.get(3));
             config.setProperty("IAMToken", IAMToken);
+            config.save("application.properties");
             YandexVisionApiConfig yandexVisionApiConfig = new YandexVisionApiConfig(
                     config.getString("IAMToken"),
                     config.getString("visionHost"),

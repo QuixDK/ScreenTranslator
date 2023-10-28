@@ -11,6 +11,7 @@ import ru.ssugt.threads.OCR.ThreadForEasyOCR;
 import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
 import ru.ssugt.threads.OCR.ThreadForYandexOCR;
 import ru.ssugt.threads.RecognizedTextHandler;
+import ru.ssugt.threads.voice.ThreadForVoiceRecord;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,6 +37,7 @@ public class MainForm implements Runnable {
     private ThreadForEasyOCR threadForEasyOCR;
     private ThreadForTesseractOCR threadForTesseractOCR;
     private RecognizedTextHandler recognizedTextHandler;
+    private ThreadForVoiceRecord threadForVoiceRecord;
     private final List<Thread> threadList = new ArrayList<>();
 
     public MainForm(Log log) {
@@ -49,7 +51,8 @@ public class MainForm implements Runnable {
         threadList.add(threadForEasyOCR);
         threadList.add(threadForTesseractOCR);
         threadList.add(recognizedTextHandler);
-        startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener());
+        threadList.add(threadForVoiceRecord);
+        startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener(threadList));
         stopTranslating.addActionListener(new StopBroadcastingListener(threadList));
         translateAreaButton.addActionListener(new StartBroadcastingListener(threadList, yandexConfigProperties, this));
 

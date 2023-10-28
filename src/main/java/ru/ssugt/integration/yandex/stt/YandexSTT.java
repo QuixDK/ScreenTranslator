@@ -1,13 +1,24 @@
 package ru.ssugt.integration.yandex.stt;
 
 
+import org.apache.commons.configuration.PropertiesConfiguration;
 import ru.ssugt.integration.ScriptHandler;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class YandexSTT {
     public String recognizeText(String pathToFile, String sourceLang) {
         ScriptHandler scriptHandler = new ScriptHandler();
-        //String command = "python pyScripts\\easyOCR.py \"" + pathToFile + "\" + \"" + sourceLang + "\"";
-        //return scriptHandler.executeScript(command);
-        return null;
+        PropertiesConfiguration config = new PropertiesConfiguration();
+        try {
+            Path currRelativePath = Paths.get("");
+            config.load(currRelativePath + "src/main/resources/application.properties");
+            String command = "python \"D:/Java Projects/cloudapi/output/test.py\" --token \"" + config.getString("IAMToken") + "\" --folder_id \"" + config.getString("folderTTSID") + "\" --path \"" +pathToFile + "\"" ;
+            return scriptHandler.executeScript(command);
+        }
+        catch ( Exception e ) {
+            return null;
+        }
     }
 }
