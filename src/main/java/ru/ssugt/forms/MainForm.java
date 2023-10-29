@@ -56,7 +56,7 @@ public class MainForm implements Runnable {
         threadList.add(recognizedTextHandler);
         threadList.add(threadForVoiceRecord);
         startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener(threadList));
-        startVoiceRecognizeButton.addActionListener(new ActionListener() {
+        stopVoiceRecognize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                     if (threadList.get(4) != null && threadList.get(4).isAlive()) {

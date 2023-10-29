@@ -6,6 +6,8 @@ import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.capture.SetRectangle;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 
+import java.awt.*;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -24,7 +26,6 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
         this.yandexVisionApi = yandexVisionApi;
         this.setRectangle = setRectangle;
         this.doneSignal = doneSignal;
-
     }
 
     @Override
@@ -33,24 +34,28 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
         List<String> languageCodes = new ArrayList<>();
         SetScreenCapture screenCapture = new SetScreenCapture();
         languageCodes.add("*");
-        while (true) {
-            Path currRelativePath = Paths.get("");
-            byte[] pictureInBase64 = screenCapture.getScreenshot(setRectangle, currRelativePath + "src/main/resources/temp/testscreen.jpg");
-            if ( isAnotherPicture(prevPicture, pictureInBase64) ) {
-                recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
-                System.out.println("YandexOCR recognized text");
+        try {
+            while (true) {
+                Path currRelativePath = Paths.get("");
+                byte[] pictureInBase64 = screenCapture.getScreenshot(setRectangle, currRelativePath + "src/main/resources/temp/testscreen.jpg");
+                if ( isAnotherPicture(prevPicture, pictureInBase64) ) {
+                    recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
+                    System.out.println("YandexOCR recognized text");
+                }
+                if ( recognizedText == null ) {
+                    continue;
+                }
+                prevPicture = pictureInBase64;
+                try {
+                    doneSignal.getDoneSignal().countDown();
+                    doneSignal.getDoneSignal().await();
+                    Thread.sleep(1);
+                } catch ( InterruptedException e ) {
+                    break;
+                }
             }
-            if (recognizedText == null) {
-                continue;
-            }
-            prevPicture = pictureInBase64;
-            try {
-                doneSignal.getDoneSignal().countDown();
-                doneSignal.getDoneSignal().await();
-                Thread.sleep(1);
-            } catch ( InterruptedException e ) {
-                break;
-            }
+        } catch ( AWTException | IOException e ) {
+            throw new RuntimeException(e);
         }
     }
 

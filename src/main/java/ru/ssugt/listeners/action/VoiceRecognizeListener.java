@@ -14,16 +14,18 @@ public class VoiceRecognizeListener implements ActionListener {
     private final List<Thread> threadList;
     Path currRelativePath = Paths.get("");
     ThreadForVoiceRecord recorder = null;
-    static final long RECORD_TIME = 10000;
+    static final long RECORD_TIME = 2000;
+
     public VoiceRecognizeListener(List<Thread> threadList) {
         this.threadList = threadList;
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         YandexSTT yandexSTT = new YandexSTT();
         threadList.set(4, new ThreadForVoiceRecord());
 
-        if (threadList.get(4) instanceof ThreadForVoiceRecord) {
+        if ( threadList.get(4) instanceof ThreadForVoiceRecord ) {
             recorder = (ThreadForVoiceRecord) threadList.get(4);
         }
         while (true) {
@@ -32,9 +34,8 @@ public class VoiceRecognizeListener implements ActionListener {
                     try {
                         Thread.sleep(RECORD_TIME);
                     } catch ( InterruptedException ex ) {
-                        ex.printStackTrace();
-                    }
 
+                    }
                     recorder.finish();
                 }
             });
