@@ -1,9 +1,6 @@
 package ru.ssugt.threads.voice;
 
 import lombok.Getter;
-import ru.ssugt.integration.tesseractOCR.TesseractOCRVision;
-import ru.ssugt.integration.yandex.stt.YandexSTT;
-import ru.ssugt.threads.DoneSignal;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -22,9 +19,10 @@ public class ThreadForVoiceRecord extends Thread implements Runnable {
 
     @Override
     public void run() {
-        displayMixerInfo();
+       // displayMixerInfo();
         try {
-            AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100.0f, 16, 1, 2, 2, false);
+            AudioFormat format = new AudioFormat(44100.0f, 16,
+                    1,true, true);
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
             // checks if system supports the data line
@@ -38,6 +36,7 @@ public class ThreadForVoiceRecord extends Thread implements Runnable {
 
             System.out.println("Start capturing...");
 
+
             AudioInputStream ais = new AudioInputStream(line);
 
             System.out.println("Start recording...");
@@ -46,10 +45,8 @@ public class ThreadForVoiceRecord extends Thread implements Runnable {
             AudioSystem.write(ais, fileType, outputFile);
 
 
-        } catch (LineUnavailableException ex) {
+        } catch ( LineUnavailableException | IOException ex) {
             ex.printStackTrace();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
         }
 
     }

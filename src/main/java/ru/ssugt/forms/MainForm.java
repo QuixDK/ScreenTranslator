@@ -15,6 +15,8 @@ import ru.ssugt.threads.voice.ThreadForVoiceRecord;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class MainForm implements Runnable {
     private JButton translateAreaButton;
     private JButton stopTranslating;
     private JButton startVoiceRecognizeButton;
+    private JButton stopVoiceRecognize;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     private final Log log;
     public JFrame mainFrame = new JFrame();
@@ -53,6 +56,14 @@ public class MainForm implements Runnable {
         threadList.add(recognizedTextHandler);
         threadList.add(threadForVoiceRecord);
         startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener(threadList));
+        startVoiceRecognizeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    if (threadList.get(4) != null && threadList.get(4).isAlive()) {
+                        threadList.get(4).interrupt();
+                    }
+                }
+        });
         stopTranslating.addActionListener(new StopBroadcastingListener(threadList));
         translateAreaButton.addActionListener(new StartBroadcastingListener(threadList, yandexConfigProperties, this));
 
@@ -88,7 +99,7 @@ public class MainForm implements Runnable {
     private void setFrameSize(Frame f) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int widthPercentage = 30;
-        int heightPercentage = 20;
+        int heightPercentage = 30;
         int frameWidth = (screenSize.width * widthPercentage) / 100;
         int frameHeight = (screenSize.height * heightPercentage) / 100;
         f.setSize(frameWidth, frameHeight);
