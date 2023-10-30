@@ -19,9 +19,14 @@ public class ThreadForVoiceRecord extends Thread implements Runnable {
 
     @Override
     public void run() {
-       // displayMixerInfo();
+        //displayMixerInfo();
         try {
-            AudioFormat format = new AudioFormat(44100.0f, 16,
+            Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+//            for (int i = 0; i < mixerInfo.length; i++) {
+//                System.out.println(mixerInfo[i]);
+//            }
+            Mixer mixer = AudioSystem.getMixer(mixerInfo[17]);
+            AudioFormat format = new AudioFormat(8000, 16,
                     1,true, true);
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
@@ -30,7 +35,7 @@ public class ThreadForVoiceRecord extends Thread implements Runnable {
                 System.out.println("Line not supported");
                 System.exit(0);
             }
-            line = (TargetDataLine) AudioSystem.getLine(info);
+            line = (TargetDataLine) mixer.getLine(info);
             line.open(format);
             line.start();   // start capturing
 

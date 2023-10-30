@@ -38,7 +38,7 @@ public class MainForm implements Runnable {
     private ThreadForEasyOCR threadForEasyOCR;
     private ThreadForTesseractOCR threadForTesseractOCR;
     private RecognizedTextHandler recognizedTextHandler;
-    private ThreadForVoiceRecord threadForVoiceRecord;
+    private ThreadForVoiceRecord threadForVoiceRecord = new ThreadForVoiceRecord();
 
     private final List<Thread> threadList = new ArrayList<>();
 

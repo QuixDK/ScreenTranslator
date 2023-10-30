@@ -14,7 +14,7 @@ public class VoiceRecognizeListener implements ActionListener {
     private final List<Thread> threadList;
     Path currRelativePath = Paths.get("");
     ThreadForVoiceRecord recorder = null;
-    static final long RECORD_TIME = 2000;
+    static final long RECORD_TIME = 5000;
 
     public VoiceRecognizeListener(List<Thread> threadList) {
         this.threadList = threadList;
@@ -28,23 +28,28 @@ public class VoiceRecognizeListener implements ActionListener {
         if ( threadList.get(4) instanceof ThreadForVoiceRecord ) {
             recorder = (ThreadForVoiceRecord) threadList.get(4);
         }
-        while (true) {
-            Thread stopper = new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        Thread.sleep(RECORD_TIME);
-                    } catch ( InterruptedException ex ) {
 
-                    }
-                    recorder.finish();
+        Thread stopper = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(RECORD_TIME);
+                } catch ( InterruptedException ex ) {
+
                 }
-            });
-            stopper.start();
-            // start recording
-            recorder.start();
-            String recognizedText = yandexSTT.recognizeText(currRelativePath + "src/main/resources/temp/file.wav", "ru");
-            System.out.println(recognizedText);
+                recorder.finish();
+            }
+        });
+        stopper.start();
+        // start recording
+        recorder.start();
+        try {
+            Thread.sleep(5000);
+        } catch ( InterruptedException ex ) {
+            throw new RuntimeException(ex);
         }
+        String recognizedText = yandexSTT.recognizeText(currRelativePath + "../../ScreenTranslator/src/main/resources/temp/file.wav", "en");
+        System.out.println(recognizedText);
+
     }
 
 }
