@@ -10,4 +10,4 @@ reader = easyocr.Reader(['en'])
 result = reader.readtext(img, detail=0)
 
 for message in result:
-    print(message.encode('utf-8'), flush=True, end='')
+    print(message, flush=True, end='')

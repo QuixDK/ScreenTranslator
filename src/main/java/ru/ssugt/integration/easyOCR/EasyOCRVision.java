@@ -1,10 +1,7 @@
 package ru.ssugt.integration.easyOCR;
 
+import org.graalvm.polyglot.Source;
 import ru.ssugt.integration.ScriptHandler;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
 public class EasyOCRVision {
 

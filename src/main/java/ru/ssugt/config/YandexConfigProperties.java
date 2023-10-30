@@ -1,6 +1,7 @@
 package ru.ssugt.config;
 
 import lombok.Getter;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApi;
 import ru.ssugt.integration.yandex.translate.YandexTranslateApiConfig;
@@ -9,9 +10,11 @@ import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 import ru.ssugt.integration.yandex.vision.YandexVisionApiConfig;
 import ru.ssugt.integration.yandex.vision.YandexVisionApiImpl;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+
 
 @Getter
 public class YandexConfigProperties {
@@ -20,30 +23,30 @@ public class YandexConfigProperties {
 
     private YandexTranslateApi yandexTranslateApi;
 
+
     public void initYandexConfigs() {
         yandexVisionApi = initYandexVision();
         yandexTranslateApi = initYandexTranslate();
     }
     private YandexTranslateApi initYandexTranslate() {
+        Path currRelativePath = Paths.get("");
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
-            Path currRelativePath = Paths.get("");
-            config.load(currRelativePath + "main//resources//application.properties");
+            config.load(currRelativePath + "src/main/resources/application.properties");
             YandexTranslateApiConfig yandexTranslateApiConfig = new YandexTranslateApiConfig(
                     config.getString("apiKey"),
                     config.getString("translateHost"));
             return new YandexTranslateApiImpl(yandexTranslateApiConfig);
-        } catch ( Exception e ) {
-            System.out.println("Config file is not found");
-            return null;
+        } catch ( ConfigurationException e ) {
+            throw new RuntimeException(e);
         }
     }
 
     private YandexVisionApi initYandexVision() {
+        Path currRelativePath = Paths.get("");
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
-            Path currRelativePath = Paths.get("");
-            config.load(currRelativePath + "main//resources//application.properties");
+            config.load(currRelativePath + "src/main/resources/application.properties");
             String command = "curl -d \"{\\\"yandexPassportOauthToken\\\":\\\"" + config.getString("OAuthToken") + "\\\"}\" \"https://iam.api.cloud.yandex.net/iam/v1/tokens\"\n";
             Process process = Runtime.getRuntime().exec(command);
             String IAMToken = "";
@@ -62,14 +65,16 @@ public class YandexConfigProperties {
             StringBuffer stringBuffer = new StringBuffer(sb.toString());
             IAMToken = stringBuffer.substring(index.get(2) + 1, index.get(3));
             config.setProperty("IAMToken", IAMToken);
+            config.save("application.properties");
             YandexVisionApiConfig yandexVisionApiConfig = new YandexVisionApiConfig(
                     config.getString("IAMToken"),
                     config.getString("visionHost"),
                     config.getString("folderId"));
             return new YandexVisionApiImpl(yandexVisionApiConfig);
-        } catch ( Exception e ) {
-            System.out.println("Config file is not found");
-            return null;
+        } catch ( ConfigurationException e ) {
+            throw new RuntimeException(e);
+        } catch ( IOException e ) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package ru.ssugt.integration;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
@@ -19,13 +20,15 @@ public class ScriptHandler {
             while ((s = stdInput.readLine()) != null) {
                 result.append(s);
             }
+
             while ((s = stdError.readLine()) != null) {
                 System.out.println(s);
             }
-        }
-        catch ( Exception ex ) {
+            return result.toString();
 
+        } catch ( IOException e ) {
+            throw new RuntimeException(e);
         }
-        return result.toString();
+
     }
 }

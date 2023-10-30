@@ -1,8 +1,10 @@
 package ru.ssugt.listeners.action;
 
+import lombok.AllArgsConstructor;
 import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.forms.MainForm;
 import ru.ssugt.listeners.mouse.SelectAreaForBroadcastingListener;
+import ru.ssugt.service.RecognizedTextService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,18 +12,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+@AllArgsConstructor
 public class StartBroadcastingListener implements ActionListener {
 
     private final List<Thread> threadList;
     private final YandexConfigProperties yandexConfigProperties;
     private final MainForm mainForm;
-
-    public StartBroadcastingListener(List<Thread> threadList, YandexConfigProperties yandexConfigProperties, MainForm mainForm) {
-        this.threadList = threadList;
-        this.yandexConfigProperties = yandexConfigProperties;
-        this.mainForm = mainForm;
-
-    }
     @Override
     public void actionPerformed(ActionEvent e) {
         JFrame areaForTranslation = new JFrame();

@@ -17,7 +17,7 @@ public class StopBroadcastingListener implements ActionListener {
             return;
         }
         for ( Thread t: threadList ) {
-            if (t.isAlive()) {
+            if (t != null && t.isAlive()) {
                 t.interrupt();
             }
         }

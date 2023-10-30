@@ -1,22 +1,24 @@
 package ru.ssugt.forms;
 
 import lombok.Getter;
+
 import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.listeners.action.StartBroadcastingListener;
 import ru.ssugt.listeners.action.StopBroadcastingListener;
 import ru.ssugt.listeners.action.VoiceRecognizeListener;
-import ru.ssugt.logger.Log;
 import ru.ssugt.threads.OCR.ThreadForEasyOCR;
 import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
 import ru.ssugt.threads.OCR.ThreadForYandexOCR;
 import ru.ssugt.threads.RecognizedTextHandler;
+import ru.ssugt.threads.voice.ThreadForVoiceRecord;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class MainForm implements Runnable {
     private JPanel MainPanel;
@@ -29,18 +31,19 @@ public class MainForm implements Runnable {
     private JButton translateAreaButton;
     private JButton stopTranslating;
     private JButton startVoiceRecognizeButton;
+    private JButton stopVoiceRecognize;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
-    private final Log log;
     public JFrame mainFrame = new JFrame();
     private ThreadForYandexOCR threadForYandexOCR;
     private ThreadForEasyOCR threadForEasyOCR;
     private ThreadForTesseractOCR threadForTesseractOCR;
     private RecognizedTextHandler recognizedTextHandler;
+    private ThreadForVoiceRecord threadForVoiceRecord = new ThreadForVoiceRecord();
+
     private final List<Thread> threadList = new ArrayList<>();
 
-    public MainForm(Log log) {
-        this.log = log;
-    }
+
+
 
     public void run() {
         YandexConfigProperties yandexConfigProperties = new YandexConfigProperties();
@@ -49,11 +52,19 @@ public class MainForm implements Runnable {
         threadList.add(threadForEasyOCR);
         threadList.add(threadForTesseractOCR);
         threadList.add(recognizedTextHandler);
-        startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener());
+        threadList.add(threadForVoiceRecord);
+        startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener(threadList));
+        stopVoiceRecognize.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    if (threadList.get(4) != null && threadList.get(4).isAlive()) {
+                        threadList.get(4).interrupt();
+                    }
+                }
+        });
         stopTranslating.addActionListener(new StopBroadcastingListener(threadList));
         translateAreaButton.addActionListener(new StartBroadcastingListener(threadList, yandexConfigProperties, this));
 
-        log.GetLogger().info("Logger has been success created");
         setFrameSize(mainFrame);
         initializeTexts(mainFrame);
         initializeSupportedLanguages();
@@ -85,7 +96,7 @@ public class MainForm implements Runnable {
     private void setFrameSize(Frame f) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int widthPercentage = 30;
-        int heightPercentage = 20;
+        int heightPercentage = 30;
         int frameWidth = (screenSize.width * widthPercentage) / 100;
         int frameHeight = (screenSize.height * heightPercentage) / 100;
         f.setSize(frameWidth, frameHeight);

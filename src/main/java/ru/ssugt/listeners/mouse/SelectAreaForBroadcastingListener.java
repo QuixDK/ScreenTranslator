@@ -1,8 +1,11 @@
 package ru.ssugt.listeners.mouse;
 
+import ru.ssugt.capture.SetScreenCapture;
 import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.forms.MainForm;
 import ru.ssugt.i18n.SupportedLanguages;
+import ru.ssugt.listeners.action.VoiceRecognizeListener;
+import ru.ssugt.service.RecognizedTextService;
 import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.capture.SetRectangle;
 import ru.ssugt.integration.easyOCR.EasyOCRVision;
@@ -11,11 +14,14 @@ import ru.ssugt.threads.OCR.ThreadForEasyOCR;
 import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
 import ru.ssugt.threads.OCR.ThreadForYandexOCR;
 import ru.ssugt.threads.RecognizedTextHandler;
+import ru.ssugt.threads.voice.ThreadForVoiceRecord;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +29,7 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
 
     double x = 0;
     double y = 0;
-    private SetRectangle setRectangle;
+    private SetRectangle rectangle;
     private List<Thread> threadList;
     private final JFrame areaForTranslation;
     private final EasyOCRVision easyOCRVision = new EasyOCRVision();
@@ -74,14 +80,19 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
         String sourceLang = ((SupportedLanguages) Objects.requireNonNull(mainForm.getChooseSourceLanguageComboBox().getSelectedItem())).code;
         String targetLang = ((SupportedLanguages) Objects.requireNonNull(mainForm.getChooseTargetLanguageComboBox().getSelectedItem())).code;
         System.out.println("Мышка отпущена " + x + " " + y + " " + width + " " + height);
-        setRectangle = new SetRectangle(x, y, width, height);
+        rectangle = new SetRectangle((int) x, (int) y, (int) width, (int) height);
         DoneSignal doneSignal = new DoneSignal();
 
-        threadList.set(0, new ThreadForYandexOCR(setRectangle, yandexConfigProperties.getYandexVisionApi(), doneSignal));
+        threadList.set(0, new ThreadForYandexOCR(rectangle, yandexConfigProperties.getYandexVisionApi(), doneSignal));
         threadList.set(1, new ThreadForEasyOCR(easyOCRVision, doneSignal, sourceLang));
         threadList.set(2, new ThreadForTesseractOCR(tesseractOCRVision, doneSignal));
-        threadList.set(3, new RecognizedTextHandler(doneSignal, (ThreadForTesseractOCR) threadList.get(2), (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0), yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang));
+        threadList.set(3, new RecognizedTextHandler(doneSignal, (ThreadForTesseractOCR) threadList.get(2),
+                (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0),
+                yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang, rectangle, threadList));
         for ( Thread t: threadList ) {
+            if (t instanceof ThreadForVoiceRecord ) {
+                continue;
+            }
             t.start();
         }
 

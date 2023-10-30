@@ -27,70 +27,47 @@ public class YandexTranslateApiImpl implements YandexTranslateApi {
     private String callYandexTranslateApi(String sourceText, String sourceLang, String targetLang) {
         try {
             HttpPost postRequest = createPostRequest(sourceText, sourceLang, targetLang);
-
             HttpClient httpClient = HttpClients.createDefault();
-
             HttpResponse response = httpClient.execute(postRequest);
 
-            if (response == null) {
+            if ( response == null ) {
                 return null;
             }
 
-            if (response.getStatusLine().getStatusCode() != 200) {
+            if ( response.getStatusLine().getStatusCode() != 200 ) {
                 System.err.println("Failed to translate text. HTTP Status Code: " + response.getStatusLine().getStatusCode());
-
                 throw new RuntimeException(String.format("Failed to translate text. HTTP Status Code=%d",
                         response.getStatusLine().getStatusCode()));
             }
-
             // Parse and show the translated text
             String responseBody = EntityUtils.toString(response.getEntity());
-
             Gson gson = new Gson();
             JsonObject responseEntity = gson.fromJson(responseBody, JsonObject.class);
-
             JsonArray translationsArr = responseEntity.get("translations").getAsJsonArray();
-
             JsonObject text = translationsArr.get(0).getAsJsonObject();
             return text.get("text").getAsString();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch ( IOException e ) {
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     private HttpPost createPostRequest(String sourceText, String sourceLang, String targetLang) {
-        try {
-            HttpPost postRequest = new HttpPost(apiConfig.host());
-
-            postRequest.setHeader("Content-Type", "application/json");
-            postRequest.setHeader("Authorization", "Api-Key " + apiConfig.apiKey());
-
-            JsonObject requestBody = this.createRequestBody(sourceText, sourceLang, targetLang);
-
-            postRequest.setEntity(new StringEntity(requestBody.toString(), ContentType.APPLICATION_JSON));
-
-            return postRequest;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        HttpPost postRequest = new HttpPost(apiConfig.host());
+        postRequest.setHeader("Content-Type", "application/json");
+        postRequest.setHeader("Authorization", "Api-Key " + apiConfig.apiKey());
+        JsonObject requestBody = this.createRequestBody(sourceText, sourceLang, targetLang);
+        postRequest.setEntity(new StringEntity(requestBody.toString(), ContentType.APPLICATION_JSON));
+        return postRequest;
     }
 
     private JsonObject createRequestBody(String sourceText, String sourceLang, String targetLang) {
         JsonObject requestBody = new JsonObject();
-
         requestBody.addProperty("sourceLanguageCode", sourceLang);
         requestBody.addProperty("targetLanguageCode", targetLang);
-
         JsonArray jsonArray = new JsonArray();
         jsonArray.add(sourceText);
-
         requestBody.add("texts", jsonArray);
-
         return requestBody;
     }
 

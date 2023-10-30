@@ -6,6 +6,10 @@ import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.capture.SetRectangle;
 import ru.ssugt.integration.yandex.vision.YandexVisionApi;
 
+import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +20,15 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
     private final DoneSignal doneSignal;
 
     @Getter
+    private byte[] pictureInBase64;
+
+    @Getter
     private String recognizedText;
 
     public ThreadForYandexOCR(SetRectangle setRectangle, YandexVisionApi yandexVisionApi, DoneSignal doneSignal) {
         this.yandexVisionApi = yandexVisionApi;
         this.setRectangle = setRectangle;
         this.doneSignal = doneSignal;
-
     }
 
     @Override
@@ -31,20 +37,28 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
         List<String> languageCodes = new ArrayList<>();
         SetScreenCapture screenCapture = new SetScreenCapture();
         languageCodes.add("*");
-        while (true) {
-            byte[] pictureInBase64 = screenCapture.getScreenshot(setRectangle, "testscreen.jpg");
-            if ( isAnotherPicture(prevPicture, pictureInBase64) ) {
-                recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
-                System.out.println("YandexOCR recognized text");
+        try {
+            while (true) {
+                Path currRelativePath = Paths.get("");
+                pictureInBase64 = screenCapture.getScreenshot(setRectangle, currRelativePath + "src/main/resources/temp/testscreen.jpg");
+                if ( isAnotherPicture(prevPicture, pictureInBase64) ) {
+                    recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
+                    System.out.println("YandexOCR recognized text");
+                }
+                if ( recognizedText == null ) {
+                    continue;
+                }
+                prevPicture = pictureInBase64;
+                try {
+                    doneSignal.getDoneSignal().countDown();
+                    doneSignal.getDoneSignal().await();
+                    Thread.sleep(1);
+                } catch ( InterruptedException e ) {
+                    break;
+                }
             }
-            prevPicture = pictureInBase64;
-            try {
-                doneSignal.getDoneSignal().countDown();
-                doneSignal.getDoneSignal().await();
-                Thread.sleep(1);
-            } catch ( InterruptedException e ) {
-                break;
-            }
+        } catch ( AWTException | IOException e ) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -62,8 +76,8 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
                 }
             }
         }
-        System.out.println(prevPicture.length);
-        System.out.println(pictureInBase64.length);
+        //System.out.println(prevPicture.length);
+        //System.out.println(pictureInBase64.length);
         return flag;
     }
 }
