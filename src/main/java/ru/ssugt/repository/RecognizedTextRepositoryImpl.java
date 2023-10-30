@@ -33,7 +33,8 @@ public class RecognizedTextRepositoryImpl implements RecognizedTextRepository{
 
         public List<RecognizedText> findAll() {
             Session session = sessionFactory.openSession();
-            List<RecognizedText> texts = session.createQuery("FROM RecognizedText", RecognizedText.class).list();
+            String query = "FROM RecognizedText SELECT ";
+            List<RecognizedText> texts = session.createQuery(query, RecognizedText.class).list();
             session.close();
             return texts;
         }

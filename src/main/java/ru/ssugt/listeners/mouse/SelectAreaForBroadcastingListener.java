@@ -1,5 +1,6 @@
 package ru.ssugt.listeners.mouse;
 
+import ru.ssugt.capture.SetScreenCapture;
 import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.forms.MainForm;
 import ru.ssugt.i18n.SupportedLanguages;
@@ -19,6 +20,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,7 +88,7 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
         threadList.set(2, new ThreadForTesseractOCR(tesseractOCRVision, doneSignal));
         threadList.set(3, new RecognizedTextHandler(doneSignal, (ThreadForTesseractOCR) threadList.get(2),
                 (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0),
-                yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang, rectangle, null));
+                yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang, rectangle, threadList));
         for ( Thread t: threadList ) {
             if (t instanceof ThreadForVoiceRecord ) {
                 continue;

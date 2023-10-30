@@ -20,6 +20,9 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
     private final DoneSignal doneSignal;
 
     @Getter
+    private byte[] pictureInBase64;
+
+    @Getter
     private String recognizedText;
 
     public ThreadForYandexOCR(SetRectangle setRectangle, YandexVisionApi yandexVisionApi, DoneSignal doneSignal) {
@@ -37,7 +40,7 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
         try {
             while (true) {
                 Path currRelativePath = Paths.get("");
-                byte[] pictureInBase64 = screenCapture.getScreenshot(setRectangle, currRelativePath + "src/main/resources/temp/testscreen.jpg");
+                pictureInBase64 = screenCapture.getScreenshot(setRectangle, currRelativePath + "src/main/resources/temp/testscreen.jpg");
                 if ( isAnotherPicture(prevPicture, pictureInBase64) ) {
                     recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
                     System.out.println("YandexOCR recognized text");

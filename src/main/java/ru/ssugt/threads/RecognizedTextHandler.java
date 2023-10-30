@@ -16,6 +16,7 @@ import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
 import ru.ssugt.threads.OCR.ThreadForYandexOCR;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 @AllArgsConstructor
@@ -28,7 +29,7 @@ public class RecognizedTextHandler extends Thread implements Runnable {
     private final String sourceLang;
     private final String targetLang;
     private final SetRectangle rectangle;
-    private final byte[] base64Picture;
+    private final List<Thread> threadList;
 
     @Override
     public void run() {
@@ -51,7 +52,11 @@ public class RecognizedTextHandler extends Thread implements Runnable {
                     String translatedText = yandexTranslateApi.getTranslatedText(yandexRecognizedText, sourceLang, targetLang);
                     textForm.setTranslatedText(translatedText);
                 }
-                recognizedTextService.saveText(yandexRecognizedText, tesseractRecognizedText, easyRecognizedText, base64Picture, null);
+                byte[] base64picture = null;
+                if (threadList.get(0) instanceof ThreadForYandexOCR) {
+                    base64picture = ((ThreadForYandexOCR) threadList.get(0)).getPictureInBase64();
+                }
+                recognizedTextService.saveText(yandexRecognizedText, tesseractRecognizedText, easyRecognizedText, base64picture , null);
 
                 doneSignal.getDoneSignal().countDown();
                 doneSignal.setDoneSignal(new CountDownLatch(4));
