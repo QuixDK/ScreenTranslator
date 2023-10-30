@@ -1,12 +1,12 @@
 package ru.ssugt.forms;
 
 import lombok.Getter;
+
 import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.i18n.SupportedLanguages;
 import ru.ssugt.listeners.action.StartBroadcastingListener;
 import ru.ssugt.listeners.action.StopBroadcastingListener;
 import ru.ssugt.listeners.action.VoiceRecognizeListener;
-import ru.ssugt.logger.Log;
 import ru.ssugt.threads.OCR.ThreadForEasyOCR;
 import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
 import ru.ssugt.threads.OCR.ThreadForYandexOCR;
@@ -19,7 +19,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class MainForm implements Runnable {
     private JPanel MainPanel;
@@ -34,18 +33,17 @@ public class MainForm implements Runnable {
     private JButton startVoiceRecognizeButton;
     private JButton stopVoiceRecognize;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
-    private final Log log;
     public JFrame mainFrame = new JFrame();
     private ThreadForYandexOCR threadForYandexOCR;
     private ThreadForEasyOCR threadForEasyOCR;
     private ThreadForTesseractOCR threadForTesseractOCR;
     private RecognizedTextHandler recognizedTextHandler;
     private ThreadForVoiceRecord threadForVoiceRecord;
+
     private final List<Thread> threadList = new ArrayList<>();
 
-    public MainForm(Log log) {
-        this.log = log;
-    }
+
+
 
     public void run() {
         YandexConfigProperties yandexConfigProperties = new YandexConfigProperties();
@@ -67,7 +65,6 @@ public class MainForm implements Runnable {
         stopTranslating.addActionListener(new StopBroadcastingListener(threadList));
         translateAreaButton.addActionListener(new StartBroadcastingListener(threadList, yandexConfigProperties, this));
 
-        log.GetLogger().info("Logger has been success created");
         setFrameSize(mainFrame);
         initializeTexts(mainFrame);
         initializeSupportedLanguages();

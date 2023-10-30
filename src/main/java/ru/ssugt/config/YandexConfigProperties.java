@@ -15,19 +15,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+
 @Getter
 public class YandexConfigProperties {
 
     private YandexVisionApi yandexVisionApi;
 
     private YandexTranslateApi yandexTranslateApi;
-    Path currRelativePath = Paths.get("");
+
 
     public void initYandexConfigs() {
         yandexVisionApi = initYandexVision();
         yandexTranslateApi = initYandexTranslate();
     }
     private YandexTranslateApi initYandexTranslate() {
+        Path currRelativePath = Paths.get("");
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
             config.load(currRelativePath + "src/main/resources/application.properties");
@@ -41,6 +43,7 @@ public class YandexConfigProperties {
     }
 
     private YandexVisionApi initYandexVision() {
+        Path currRelativePath = Paths.get("");
         PropertiesConfiguration config = new PropertiesConfiguration();
         try {
             config.load(currRelativePath + "src/main/resources/application.properties");

@@ -3,6 +3,8 @@ package ru.ssugt.listeners.mouse;
 import ru.ssugt.config.YandexConfigProperties;
 import ru.ssugt.forms.MainForm;
 import ru.ssugt.i18n.SupportedLanguages;
+import ru.ssugt.listeners.action.VoiceRecognizeListener;
+import ru.ssugt.service.RecognizedTextService;
 import ru.ssugt.threads.DoneSignal;
 import ru.ssugt.capture.SetRectangle;
 import ru.ssugt.integration.easyOCR.EasyOCRVision;
@@ -11,6 +13,7 @@ import ru.ssugt.threads.OCR.ThreadForEasyOCR;
 import ru.ssugt.threads.OCR.ThreadForTesseractOCR;
 import ru.ssugt.threads.OCR.ThreadForYandexOCR;
 import ru.ssugt.threads.RecognizedTextHandler;
+import ru.ssugt.threads.voice.ThreadForVoiceRecord;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,8 +83,13 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
         threadList.set(0, new ThreadForYandexOCR(rectangle, yandexConfigProperties.getYandexVisionApi(), doneSignal));
         threadList.set(1, new ThreadForEasyOCR(easyOCRVision, doneSignal, sourceLang));
         threadList.set(2, new ThreadForTesseractOCR(tesseractOCRVision, doneSignal));
-        threadList.set(3, new RecognizedTextHandler(rectangle ,doneSignal, (ThreadForTesseractOCR) threadList.get(2), (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0), yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang));
+        threadList.set(3, new RecognizedTextHandler(doneSignal, (ThreadForTesseractOCR) threadList.get(2),
+                (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0),
+                yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang, rectangle, null));
         for ( Thread t: threadList ) {
+            if (t instanceof ThreadForVoiceRecord ) {
+                continue;
+            }
             t.start();
         }
 
