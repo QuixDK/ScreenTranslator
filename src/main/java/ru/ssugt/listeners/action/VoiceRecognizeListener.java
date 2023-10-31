@@ -47,7 +47,7 @@ public class VoiceRecognizeListener implements ActionListener {
         } catch ( InterruptedException ex ) {
             throw new RuntimeException(ex);
         }
-        String recognizedText = yandexSTT.recognizeText(currRelativePath + "../../ScreenTranslator/src/main/resources/temp/file.wav", "en");
+        String recognizedText = yandexSTT.recognizeText("D:/Java Projects/ScreenTranslator/src/main/resources/temp/test.wav", "en");
         System.out.println(recognizedText);
 
     }

@@ -22,7 +22,9 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Annotated entity classes -->
+        <mapping class="ru.ssugt.model.RecognizedVoice"/>
         <mapping class="ru.ssugt.model.RecognizedText"/>
+
 
     </session-factory>
 </hibernate-configuration>

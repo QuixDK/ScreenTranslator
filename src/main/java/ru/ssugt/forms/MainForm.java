@@ -81,6 +81,8 @@ public class MainForm implements Runnable {
         supportedLanguagesList.add(SupportedLanguages.English);
         supportedLanguagesList.add(SupportedLanguages.French);
         supportedLanguagesList.add(SupportedLanguages.Russian);
+        supportedLanguagesList.add(SupportedLanguages.Korean);
+        supportedLanguagesList.add(SupportedLanguages.Japanese);
         for ( SupportedLanguages language : supportedLanguagesList ) {
             chooseTargetLanguageComboBox.addItem(language);
             chooseSourceLanguageComboBox.addItem(language);

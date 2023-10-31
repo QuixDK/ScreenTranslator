@@ -77,7 +77,7 @@ public class YandexVisionApiImpl implements YandexVisionApi {
                         for ( int k = 0; k < alternatives.size(); k++ ) {
                             alternativesElement = alternatives.get(k).getAsJsonObject();
                             String string = alternativesElement.getAsJsonObject().get("text").getAsString();
-                            stringBuilder.append(string);
+                            stringBuilder.append(string).append(" ");
                         }
                         stringBuilder.append("\n");
                     }

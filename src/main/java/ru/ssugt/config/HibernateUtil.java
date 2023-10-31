@@ -8,6 +8,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.internal.SessionFactoryImpl;
 import ru.ssugt.model.RecognizedText;
+import ru.ssugt.model.RecognizedVoice;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -29,6 +30,7 @@ public class HibernateUtil {
             try {
                 Configuration configuration = new Configuration().configure();
                 configuration.addAnnotatedClass(RecognizedText.class);
+                configuration.addAnnotatedClass(RecognizedVoice.class);
                 StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
                 sessionFactory = configuration.buildSessionFactory(builder.build());
 
