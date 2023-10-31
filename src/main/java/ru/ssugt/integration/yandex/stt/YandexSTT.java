@@ -34,7 +34,7 @@ public class YandexSTT {
             Path currRelativePath = Paths.get("");
             config.load(currRelativePath + "src/main/resources/application.properties");
             ScriptHandler scriptHandler = new ScriptHandler();
-            String command = "python \"D:/Java Projects/cloudapi/output/test.py\" --token \"" + config.getString("IAMToken") + " \" --folder_id \"" + config.getString("folderTTSID") + "\" --path \"" + pathToFile + "\"";
+            String command = "python \"D:/Java Projects/cloudapi/output/test.py\" --token \"" + config.getString("IAMToken") + "\" --folder_id \"" + config.getString("folderTTSID") + "\" --path \"" + pathToFile + "\"";
             String response = scriptHandler.executeScript(command);
             File file = new File(pathToFile);
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);

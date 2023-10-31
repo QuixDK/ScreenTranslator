@@ -17,7 +17,7 @@ public class RecognizedVoice {
     @Column(name = "id")
     private Long id;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String yandex_stt;
 
     @Column
