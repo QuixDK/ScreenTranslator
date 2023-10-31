@@ -53,7 +53,7 @@ public class MainForm implements Runnable {
         threadList.add(threadForTesseractOCR);
         threadList.add(recognizedTextHandler);
         threadList.add(threadForVoiceRecord);
-        startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener(threadList));
+        startVoiceRecognizeButton.addActionListener(new VoiceRecognizeListener(threadList, yandexConfigProperties.getYandexTranslateApi(), this));
         stopVoiceRecognize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -81,6 +81,8 @@ public class MainForm implements Runnable {
         supportedLanguagesList.add(SupportedLanguages.English);
         supportedLanguagesList.add(SupportedLanguages.French);
         supportedLanguagesList.add(SupportedLanguages.Russian);
+        supportedLanguagesList.add(SupportedLanguages.Korean);
+        supportedLanguagesList.add(SupportedLanguages.Japanese);
         for ( SupportedLanguages language : supportedLanguagesList ) {
             chooseTargetLanguageComboBox.addItem(language);
             chooseSourceLanguageComboBox.addItem(language);

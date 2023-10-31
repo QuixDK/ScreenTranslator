@@ -85,7 +85,7 @@ public class SelectAreaForBroadcastingListener implements MouseListener {
 
         threadList.set(0, new ThreadForYandexOCR(rectangle, yandexConfigProperties.getYandexVisionApi(), doneSignal));
         threadList.set(1, new ThreadForEasyOCR(easyOCRVision, doneSignal, sourceLang));
-        threadList.set(2, new ThreadForTesseractOCR(tesseractOCRVision, doneSignal));
+        threadList.set(2, new ThreadForTesseractOCR(tesseractOCRVision, doneSignal, sourceLang));
         threadList.set(3, new RecognizedTextHandler(doneSignal, (ThreadForTesseractOCR) threadList.get(2),
                 (ThreadForEasyOCR) threadList.get(1), (ThreadForYandexOCR) threadList.get(0),
                 yandexConfigProperties.getYandexTranslateApi(), sourceLang, targetLang, rectangle, threadList));

@@ -8,7 +8,7 @@ public class EasyOCRVision {
     public String recognizeText(String pathToFile, String sourceLang) {
 
         ScriptHandler scriptHandler = new ScriptHandler();
-        String command = "python pyScripts\\easyOCR.py \"" + pathToFile + "\" + \"" + sourceLang + "\"";
+        String command = "python pyScripts\\easyOCR.py \"" + pathToFile + "\"  \"" + sourceLang + "\"";
         return scriptHandler.executeScript(command);
     }
 }
