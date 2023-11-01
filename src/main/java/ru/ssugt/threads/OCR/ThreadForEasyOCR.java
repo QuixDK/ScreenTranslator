@@ -27,7 +27,7 @@ public class ThreadForEasyOCR extends Thread implements Runnable {
     public void run() {
         while (true) {
             Path currRelativePath = Paths.get("");
-            recognizedText = easyOCRVision.recognizeText(currRelativePath + "src/main/resources/temp/testscreen.jpg", sourceLang);
+            //recognizedText = easyOCRVision.recognizeText(currRelativePath + "src/main/resources/temp/testscreen.jpg", sourceLang);
             System.out.println("EasyOCR recognized text");
             try {
                 doneSignal.getDoneSignal().countDown();

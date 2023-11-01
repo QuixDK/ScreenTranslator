@@ -32,6 +32,8 @@ public class MainForm implements Runnable {
     private JButton stopTranslating;
     private JButton startVoiceRecognizeButton;
     private JButton stopVoiceRecognize;
+    private JButton checkVoiceRecognizedDataBase;
+    private JButton checkTextRecognizedDatabase;
     private final ArrayList<SupportedLanguages> supportedLanguagesList = new ArrayList<>();
     public JFrame mainFrame = new JFrame();
     private ThreadForYandexOCR threadForYandexOCR;
@@ -61,6 +63,20 @@ public class MainForm implements Runnable {
                         threadList.get(4).interrupt();
                     }
                 }
+        });
+
+        checkTextRecognizedDatabase.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new TextTableForm());
+            }
+        });
+
+        checkVoiceRecognizedDataBase.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new VoiceTableForm());
+            }
         });
         stopTranslating.addActionListener(new StopBroadcastingListener(threadList));
         translateAreaButton.addActionListener(new StartBroadcastingListener(threadList, yandexConfigProperties, this));

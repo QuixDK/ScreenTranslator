@@ -48,8 +48,8 @@ public class RecognizedTextHandler extends Thread implements Runnable {
                 String easyRecognizedText = threadForEasyOCR.getRecognizedText();
                 String yandexRecognizedText = threadForYandexOCR.getRecognizedText();
 
-                if ( !yandexRecognizedText.equals("") ) {
-                    String translatedText = yandexTranslateApi.getTranslatedText(yandexRecognizedText, sourceLang, targetLang);
+                if ( !tesseractRecognizedText.equals("") ) {
+                    String translatedText = yandexTranslateApi.getTranslatedText(tesseractRecognizedText, sourceLang, targetLang);
                     textForm.setTranslatedText(translatedText);
                 }
                 byte[] base64picture = null;

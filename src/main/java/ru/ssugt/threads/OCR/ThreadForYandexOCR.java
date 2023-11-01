@@ -42,12 +42,12 @@ public class ThreadForYandexOCR extends Thread implements Runnable {
                 Path currRelativePath = Paths.get("");
                 pictureInBase64 = screenCapture.getScreenshot(setRectangle, currRelativePath + "src/main/resources/temp/testscreen.jpg");
                 if ( isAnotherPicture(prevPicture, pictureInBase64) ) {
-                    recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
+                    //recognizedText = yandexVisionApi.recognizeText("JPEG", languageCodes, "page", pictureInBase64);
                     System.out.println("YandexOCR recognized text");
                 }
-                if ( recognizedText == null ) {
-                    continue;
-                }
+//                if ( recognizedText == null ) {
+//                    continue;
+//                }
                 prevPicture = pictureInBase64;
                 try {
                     doneSignal.getDoneSignal().countDown();
