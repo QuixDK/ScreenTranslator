@@ -2,6 +2,7 @@ package ru.ssugt;
 
 import com.formdev.flatlaf.FlatDarkLaf;;
 import ru.ssugt.forms.MainForm;
+import ru.ssugt.forms.TextTableForm;
 
 import javax.swing.*;
 import java.awt.*;

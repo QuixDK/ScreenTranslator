@@ -35,7 +35,7 @@ public class RecognizedVoiceRepositoryImpl implements RecognizedVoiceRepository{
     @Override
     public List<RecognizedVoice> findAll() {
         Session session = sessionFactory.openSession();
-        String query = "FROM RecognizedVoice SELECT ";
+        String query = "FROM RecognizedVoice WHERE 1=1";
         List<RecognizedVoice> texts = session.createQuery(query, RecognizedVoice.class).list();
         session.close();
         return texts;

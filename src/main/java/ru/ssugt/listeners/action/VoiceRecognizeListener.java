@@ -36,7 +36,7 @@ public class VoiceRecognizeListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         YandexSTT yandexSTT = new YandexSTT();
         threadList.set(4, new ThreadForVoiceRecord());
-        while (true) {
+//        while (true) {
             try {
                 if ( threadList.get(4) instanceof ThreadForVoiceRecord ) {
                     recorder = (ThreadForVoiceRecord) threadList.get(4);
@@ -61,7 +61,7 @@ public class VoiceRecognizeListener implements ActionListener {
                 try {
                     Thread.sleep(5000);
                 } catch ( InterruptedException ex ) {
-                    break;
+
                 }
 
                 TranslatedTextForm textForm = new TranslatedTextForm(new SetRectangle(100, 100, 20, 30));
@@ -79,7 +79,7 @@ public class VoiceRecognizeListener implements ActionListener {
                 ex.printStackTrace();
             }
             //System.out.println(recognizedText);
-        }
+        //}
 
     }
 

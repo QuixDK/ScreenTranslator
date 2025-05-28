@@ -5,6 +5,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import ru.ssugt.model.RecognizedText;
 
+import javax.management.Query;
 import java.util.List;
 
 
@@ -33,7 +34,7 @@ public class RecognizedTextRepositoryImpl implements RecognizedTextRepository{
 
         public List<RecognizedText> findAll() {
             Session session = sessionFactory.openSession();
-            String query = "FROM RecognizedText SELECT ";
+            String query = "FROM RecognizedText where 1=1 ORDER BY id DESC";
             List<RecognizedText> texts = session.createQuery(query, RecognizedText.class).list();
             session.close();
             return texts;
