@@ -56,7 +56,7 @@ public class RecognizedTextHandler extends Thread implements Runnable {
                 if (threadList.get(0) instanceof ThreadForYandexOCR) {
                     base64picture = ((ThreadForYandexOCR) threadList.get(0)).getPictureInBase64();
                 }
-                recognizedTextService.saveText(yandexRecognizedText, tesseractRecognizedText, easyRecognizedText, base64picture , null);
+               // recognizedTextService.saveText(yandexRecognizedText, tesseractRecognizedText, easyRecognizedText, base64picture , null);
 
                 doneSignal.getDoneSignal().countDown();
                 doneSignal.setDoneSignal(new CountDownLatch(4));

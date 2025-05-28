@@ -34,7 +34,7 @@ public class RecognizedTextRepositoryImpl implements RecognizedTextRepository{
 
         public List<RecognizedText> findAll() {
             Session session = sessionFactory.openSession();
-            String query = "FROM RecognizedText where 1=1";
+            String query = "FROM RecognizedText where 1=1 ORDER BY id DESC";
             List<RecognizedText> texts = session.createQuery(query, RecognizedText.class).list();
             session.close();
             return texts;
